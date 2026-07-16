@@ -22,6 +22,17 @@ import path from 'path';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 async function seed() {
+  const uri = process.env.MONGODB_URI || '';
+  const isDevOrLocal = uri.includes('dev') || uri.includes('localhost');
+  const hasForceFlag = process.argv.includes('--force');
+
+  if (!isDevOrLocal && !hasForceFlag) {
+    console.warn('WARNING: Target database MONGODB_URI does not appear to be a development or localhost database.');
+    console.warn('To override and force seeding on this database, run: npm run db:seed -- --force');
+    console.warn('Exiting cleanly without performing database deletion or seeding.');
+    process.exit(0);
+  }
+
   try {
     console.log('Connecting to database...');
     await dbConnect();

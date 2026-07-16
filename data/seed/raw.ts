@@ -1,39 +1,40 @@
+// PLACEHOLDER DATA — unverified, do not use in production until manually reviewed and fact-checked
 export const rawDistricts = [
   {
     name: "Ahmedabad",
     region: "Central Gujarat",
     bestSeason: "October to March",
-    overviewCached: "Ahmedabad, India's first UNESCO World Heritage City, sits on the banks of the Sabarmati River. It is a vibrant metropolis that seamlessly blends ancient architecture—characterized by intricate wooden havelis and centuries-old mosques—with modern industrial hubs and a world-renowned street food culture."
+    overviewCached: ""
   },
   {
     name: "Kutch",
     region: "West Gujarat (Kutch)",
     bestSeason: "November to February",
-    overviewCached: "Kutch is a geographic marvel, famous for the Great Rann of Kutch—a vast salt desert that glows white under the moonlight. The district is rich in cultural heritage, defined by unique handicrafts, traditional mud huts (bhungas), and vibrant folk music and dance."
+    overviewCached: ""
   },
   {
     name: "Junagadh",
     region: "Saurashtra",
     bestSeason: "November to March",
-    overviewCached: "Junagadh is a historic city nestled at the foot of the sacred Girnar Hills. It represents a fascinating mix of ancient rock-cut caves, ornate palaces, and lush wildlife reserves—being the primary gateway to Sasan Gir, the last sanctuary of the Asiatic Lion."
+    overviewCached: ""
   },
   {
     name: "Dwarka",
     region: "Saurashtra (Coastal)",
     bestSeason: "October to March",
-    overviewCached: "Dwarka is one of India's most sacred pilgrimage sites, ancient capital of Lord Krishna's kingdom and a key Dham of the Char Dham circuit. Situated on the westernmost tip of the Saurashtra peninsula, it offers rich spiritual history along with scenic beaches."
+    overviewCached: ""
   },
   {
     name: "Vadodara",
-    region: "South Gujarat",
+    region: "Central Gujarat",
     bestSeason: "October to March",
-    overviewCached: "Vadodara (formerly Baroda) is the cultural capital of Gujarat, celebrated for its royal heritage, grand palaces, and academic institutions. It features the magnificent Laxmi Vilas Palace and is the gateway to Champaner, a UNESCO World Heritage site."
+    overviewCached: ""
   },
   {
     name: "Narmada (Kevadia)",
-    region: "South-East Gujarat",
+    region: "South Gujarat",
     bestSeason: "October to March",
-    overviewCached: "Narmada district, centered around the town of Kevadia (Ekta Nagar), has evolved into a premier tourist hub. It is home to the world's tallest monument, the Statue of Unity, set against the scenic backdrop of the Narmada River, Vindhya, and Satpura mountain ranges."
+    overviewCached: ""
   }
 ];
 
@@ -45,7 +46,7 @@ export const rawAttractions = [
     type: "Heritage",
     tags: ["History", "Gandhi", "Peace", "Sabarmati"],
     description: "The tranquil home of Mahatma Gandhi from 1917 to 1930, which served as one of the main centers of the Indian freedom struggle.",
-    coordinates: { lat: 23.0605, lng: 72.5801 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Adalaj Stepwell (Adalaj ni Vav)",
@@ -53,7 +54,7 @@ export const rawAttractions = [
     type: "Heritage",
     tags: ["Architecture", "Heritage", "Stepwell"],
     description: "A spectacular five-story deep stepwell built in 1498, famous for its Solanki style architecture, stone carvings, and pleasant interior temperature.",
-    coordinates: { lat: 23.1672, lng: 72.5786 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Sidi Saiyyed Mosque",
@@ -61,7 +62,7 @@ export const rawAttractions = [
     type: "Architecture",
     tags: ["History", "Mosque", "Stone lattice", "Jali"],
     description: "A 16th-century mosque famous worldwide for its exquisite stone lattice window (Sidi Saiyyed Jali), depicting the tree of life.",
-    coordinates: { lat: 23.0269, lng: 72.5808 }
+    coordinates: { lat: 0, lng: 0 }
   },
 
   // Kutch
@@ -71,7 +72,7 @@ export const rawAttractions = [
     type: "Nature",
     tags: ["Salt Desert", "Scenic", "Sunset", "Rann Utsav"],
     description: "The world's largest salt desert, stretching across 7,500 square kilometers, renowned for its spectacular white landscape, especially during full moon nights.",
-    coordinates: { lat: 23.8016, lng: 69.8055 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Kalo Dungar (Black Hill)",
@@ -79,7 +80,7 @@ export const rawAttractions = [
     type: "Nature",
     tags: ["Hill", "Panoramic View", "Border area", "Sunset"],
     description: "The highest point in Kutch, offering a breathtaking panoramic view of the Great Rann and the Indo-Pak border area.",
-    coordinates: { lat: 23.9312, lng: 69.7895 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Aina Mahal & Prag Mahal",
@@ -87,7 +88,7 @@ export const rawAttractions = [
     type: "Heritage",
     tags: ["Palace", "Museum", "Italian Gothic", "Mirrors"],
     description: "A palace complex in Bhuj; Aina Mahal (Palace of Mirrors) features 18th-century European glass work, while Prag Mahal is an Italian Gothic masterpiece.",
-    coordinates: { lat: 23.2542, lng: 69.6682 }
+    coordinates: { lat: 0, lng: 0 }
   },
 
   // Junagadh
@@ -97,7 +98,7 @@ export const rawAttractions = [
     type: "Wildlife",
     tags: ["Lions", "Safari", "Forest", "Nature"],
     description: "The exclusive natural habitat of the endangered Asiatic Lions, offering wildlife safaris in a dry deciduous scrub forest.",
-    coordinates: { lat: 21.1345, lng: 70.6276 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Girnar Hill & Temples",
@@ -105,7 +106,7 @@ export const rawAttractions = [
     type: "Spiritual",
     tags: ["Pilgrimage", "Trekking", "Temples", "Ropeway"],
     description: "A sacred mountain older than the Himalayas, featuring 10,000 steps, ancient Hindu and Jain temples, and India's longest temple ropeway.",
-    coordinates: { lat: 21.5298, lng: 70.5283 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Mahabat Maqbara",
@@ -113,7 +114,7 @@ export const rawAttractions = [
     type: "Architecture",
     tags: ["Heritage", "Mausoleum", "Gothic-Islamic"],
     description: "An extraordinary 19th-century mausoleum complex known for its unique blend of Gothic, Islamic, and European architectural elements, featuring spiral minarets.",
-    coordinates: { lat: 21.5226, lng: 70.4578 }
+    coordinates: { lat: 0, lng: 0 }
   },
 
   // Dwarka
@@ -123,7 +124,7 @@ export const rawAttractions = [
     type: "Spiritual",
     tags: ["Krishna", "Pilgrimage", "Ancient Temple", "Architecture"],
     description: "A 5-story tall, 2200-year-old temple dedicated to Lord Krishna, supported by 72 pillars, standing majestically on the banks of Gomti River.",
-    coordinates: { lat: 22.2441, lng: 68.9674 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Bet Dwarka",
@@ -131,7 +132,7 @@ export const rawAttractions = [
     type: "Spiritual",
     tags: ["Island", "Boat ride", "Krishna", "Archaeology"],
     description: "An island off the coast of Okha, believed to be the original residence of Lord Krishna, accessible by a scenic ferry ride.",
-    coordinates: { lat: 22.4433, lng: 69.1000 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Shivrajpur Beach",
@@ -139,7 +140,7 @@ export const rawAttractions = [
     type: "Nature",
     tags: ["Blue Flag Beach", "Ocean", "Water Sports", "Scenic"],
     description: "A pristine Blue Flag certified beach near Dwarka, famous for its clear blue waters, clean white sands, scuba diving, and dolphin spotting.",
-    coordinates: { lat: 22.3312, lng: 68.9482 }
+    coordinates: { lat: 0, lng: 0 }
   },
 
   // Vadodara
@@ -149,7 +150,7 @@ export const rawAttractions = [
     type: "Heritage",
     tags: ["Palace", "Royal family", "Maratha Heritage", "Indo-Saracenic"],
     description: "An iconic, sprawling Indo-Saracenic palace built in 1890, four times the size of Buckingham Palace, and still the home of the royal Gaekwad family.",
-    coordinates: { lat: 22.2936, lng: 73.1897 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Champaner-Pavagadh Archaeological Park",
@@ -157,7 +158,7 @@ export const rawAttractions = [
     type: "Heritage",
     tags: ["UNESCO Site", "Fortress", "Ancient City", "Mosques"],
     description: "A UNESCO World Heritage site featuring an intact pre-Mughal Islamic city, ancient temples, fortresses, and water installations.",
-    coordinates: { lat: 22.4639, lng: 73.5350 }
+    coordinates: { lat: 0, lng: 0 }
   },
 
   // Narmada
@@ -167,7 +168,7 @@ export const rawAttractions = [
     type: "Monument",
     tags: ["Sardar Patel", "Tallest Statue", "Scenic", "Engineering Marvel"],
     description: "The world's tallest statue (182 meters) honoring Sardar Vallabhbhai Patel, offering a viewing gallery at 153 meters with panoramic views of the Sardar Sarovar Dam.",
-    coordinates: { lat: 21.8380, lng: 73.7191 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Valley of Flowers & Butterfly Garden",
@@ -175,7 +176,7 @@ export const rawAttractions = [
     type: "Nature",
     tags: ["Garden", "Scenic", "Flowers", "Eco-tourism"],
     description: "A beautifully landscaped garden stretching along the Narmada River, showcasing over 300 species of flowers and a dedicated butterfly park.",
-    coordinates: { lat: 21.8310, lng: 73.7225 }
+    coordinates: { lat: 0, lng: 0 }
   }
 ];
 
@@ -185,49 +186,49 @@ export const rawHiddenGems = [
     districtName: "Ahmedabad",
     tags: ["Sufism", "Water Palace", "Peaceful", "Architecture"],
     description: "An elegant mosque and tomb complex outside the city, referred to as 'The Acropolis of Ahmedabad' due to its modular grid layout and beautiful water body.",
-    coordinates: { lat: 22.9818, lng: 72.5028 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "French Haveli",
     districtName: "Ahmedabad",
     tags: ["Heritage Walk", "Pol", "Historic House"],
     description: "A restored, 150-year-old traditional wooden haveli situated inside the old 'Pol' neighborhood, showcasing ancient community living structures.",
-    coordinates: { lat: 23.0245, lng: 72.5932 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Chhari Dhandh Wetland Reserve",
     districtName: "Kutch",
     tags: ["Birdwatching", "Wetland", "Flamingos", "Desert"],
     description: "A seasonal wetland that hosts millions of migratory birds in winter, including desert raptors, cranes, and large flocks of greater flamingos.",
-    coordinates: { lat: 23.4478, lng: 69.3412 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Jata Shankar Caves",
     districtName: "Junagadh",
     tags: ["Cave", "Spiritual", "Waterfall", "Trek"],
     description: "A lesser-known cave temple located behind the Girnar hill, featuring a natural water stream cascading over a Shiva Lingam, accessible via a short forest trek.",
-    coordinates: { lat: 21.5332, lng: 70.4789 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Gopi Talav",
     districtName: "Dwarka",
     tags: ["Spiritual", "Pond", "Krishna", "Yellow Clay"],
     description: "A quiet pond associated with legends of Krishna and Gopis, where the soil is yellow, soft, and revered as Gopi Chandan.",
-    coordinates: { lat: 22.3732, lng: 69.0498 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Naida Caves",
     districtName: "Junagadh",
     tags: ["Caves", "Natural light", "Photography", "Portuguese"],
     description: "A network of rock-cut caves near Diu (bordering Junagadh region) created by Portuguese quarrying, famous for its sunbeams casting magical patterns.",
-    coordinates: { lat: 20.7102, lng: 70.9892 }
+    coordinates: { lat: 0, lng: 0 }
   },
   {
     name: "Zarwani Waterfall & Eco Campsite",
     districtName: "Narmada (Kevadia)",
     tags: ["Waterfall", "Forest", "Trek", "Adventure"],
     description: "A quiet waterfall located inside the Shoolpaneshwar Wildlife Sanctuary, ideal for a peaceful nature walk away from the tourist crowd in Kevadia.",
-    coordinates: { lat: 21.8260, lng: 73.7540 }
+    coordinates: { lat: 0, lng: 0 }
   }
 ];
 
