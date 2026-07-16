@@ -1,0 +1,520 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import {
+  Sparkles,
+  MapPin,
+  Calendar,
+  Compass,
+  ArrowLeft,
+  Loader2,
+  Utensils,
+  Gem,
+  Camera,
+  RotateCcw,
+  AlertCircle,
+  CheckCircle2,
+} from 'lucide-react';
+
+interface District {
+  _id: string;
+  name: string;
+  region: string;
+  bestSeason: string;
+}
+
+interface Attraction {
+  _id: string;
+  name: string;
+  type: string;
+  tags: string[];
+  description: string;
+}
+
+interface FoodItem {
+  _id: string;
+  name: string;
+  type: 'veg' | 'non-veg' | 'street' | 'restaurant';
+  description: string;
+  priceRange: string;
+  aiBlurb?: string;
+}
+
+interface HiddenGem {
+  _id: string;
+  name: string;
+  tags: string[];
+  description: string;
+  reason?: string;
+}
+
+const INTERESTS_OPTIONS = [
+  { id: 'heritage', label: 'Heritage & Palaces' },
+  { id: 'nature', label: 'Nature & Scenic Views' },
+  { id: 'wildlife', label: 'Wildlife & Safari' },
+  { id: 'spiritual', label: 'Spiritual & Temples' },
+  { id: 'adventure', label: 'Adventure & Trekking' },
+  { id: 'food', label: 'Food & Culinary Experiences' },
+  { id: 'architecture', label: 'Architecture & Stepwells' },
+  { id: 'history', label: 'History & Gandhi Heritage' },
+];
+
+export default function DistrictDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params?.id as string;
+
+  const [district, setDistrict] = useState<District | null>(null);
+  const [overview, setOverview] = useState<string | null>(null);
+  const [attractions, setAttractions] = useState<Attraction[]>([]);
+  const [foods, setFoods] = useState<FoodItem[]>([]);
+  const [hiddenGems, setHiddenGems] = useState<HiddenGem[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+
+  // Loaders
+  const [loadingDistrict, setLoadingDistrict] = useState(true);
+  const [loadingOverview, setLoadingOverview] = useState(true);
+  const [loadingAttractions, setLoadingAttractions] = useState(true);
+  const [loadingFood, setLoadingFood] = useState(true);
+  const [loadingGems, setLoadingGems] = useState(true);
+
+  // Actions
+  const [regenerating, setRegenerating] = useState(false);
+  const [regenSuccess, setRegenSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch basic district detail by loading all districts and filtering
+  useEffect(() => {
+    if (!id) return;
+    async function loadDistrict() {
+      try {
+        setLoadingDistrict(true);
+        const res = await fetch('/api/districts');
+        if (!res.ok) throw new Error('Failed to load districts list');
+        const data: District[] = await res.json();
+        const found = data.find((d) => d._id === id);
+        if (!found) {
+          setError('District not found.');
+        } else {
+          setDistrict(found);
+        }
+      } catch (err: any) {
+        setError(err?.message || 'Failed to connect to database.');
+      } finally {
+        setLoadingDistrict(false);
+      }
+    }
+    loadDistrict();
+  }, [id]);
+
+  // Fetch AI Overview (Cached on load)
+  useEffect(() => {
+    if (!id) return;
+    async function loadOverview() {
+      try {
+        setLoadingOverview(true);
+        const res = await fetch(`/api/districts/${id}/overview`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch overview');
+        setOverview(data.overview);
+      } catch (err: any) {
+        console.error(err);
+      } finally {
+        setLoadingOverview(false);
+      }
+    }
+    loadOverview();
+  }, [id]);
+
+  // Fetch Attractions
+  useEffect(() => {
+    if (!id) return;
+    async function loadAttractions() {
+      try {
+        setLoadingAttractions(true);
+        const res = await fetch(`/api/districts/${id}/attractions`);
+        if (!res.ok) throw new Error('Failed to fetch attractions');
+        const data = await res.json();
+        setAttractions(data);
+      } catch (err: any) {
+        console.error(err);
+      } finally {
+        setLoadingAttractions(false);
+      }
+    }
+    loadAttractions();
+  }, [id]);
+
+  // Fetch Food Recommendations
+  useEffect(() => {
+    if (!id) return;
+    async function loadFood() {
+      try {
+        setLoadingFood(true);
+        const res = await fetch(`/api/districts/${id}/food`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch food recommendations');
+        setFoods(data);
+      } catch (err: any) {
+        console.error(err);
+      } finally {
+        setLoadingFood(false);
+      }
+    }
+    loadFood();
+  }, [id]);
+
+  // Fetch Hidden Gems - Dynamic based on active interests
+  useEffect(() => {
+    if (!id) return;
+    async function loadGems() {
+      try {
+        setLoadingGems(true);
+        const queryStr =
+          selectedInterests.length > 0 ? `?interests=${selectedInterests.join(',')}` : '';
+        const res = await fetch(`/api/districts/${id}/hidden-gems${queryStr}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch hidden gems');
+        setHiddenGems(data);
+      } catch (err: any) {
+        console.error(err);
+      } finally {
+        setLoadingGems(false);
+      }
+    }
+    loadGems();
+  }, [id, selectedInterests]);
+
+  const handleInterestToggle = (interestId: string) => {
+    setSelectedInterests((prev) =>
+      prev.includes(interestId) ? prev.filter((i) => i !== interestId) : [...prev, interestId]
+    );
+  };
+
+  const handleRegenerate = async () => {
+    setRegenerating(true);
+    setRegenSuccess(false);
+    setError(null);
+    try {
+      // Parallel force regeneration for overview and food
+      const [overviewRes, foodRes] = await Promise.all([
+        fetch(`/api/districts/${id}/overview?force=true`),
+        fetch(`/api/districts/${id}/food?force=true`),
+      ]);
+
+      const overviewData = await overviewRes.json();
+      const foodData = await foodRes.json();
+
+      if (!overviewRes.ok) {
+        throw new Error(overviewData.error || 'Failed to regenerate overview');
+      }
+      if (!foodRes.ok) {
+        throw new Error(foodData.error || 'Failed to regenerate food recommendations');
+      }
+
+      setOverview(overviewData.overview);
+      setFoods(foodData);
+      setRegenSuccess(true);
+      setTimeout(() => setRegenSuccess(false), 4000);
+    } catch (err: any) {
+      setError(err?.message || 'Regeneration failed. Rate limit or server error occurred.');
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
+  if (loadingDistrict) {
+    return (
+      <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center">
+        <Loader2 className="h-10 w-10 text-teal-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error && !district) {
+    return (
+      <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center justify-center p-6">
+        <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-bold text-red-400">Error Loading District</h2>
+        <p className="text-slate-400 mt-2 text-sm max-w-md text-center">{error}</p>
+        <Link href="/districts" className="mt-6 text-sm text-teal-400 hover:underline">
+          Back to districts directory
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-teal-500 selection:text-slate-900 pb-20">
+      {/* Header */}
+      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link href="/districts" className="flex items-center gap-2 group text-slate-400 hover:text-slate-200 transition-colors">
+            <ArrowLeft className="h-4 w-4 transform group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-semibold">Back to Districts</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/itinerary"
+              className="text-xs font-semibold px-4 py-2 rounded-xl bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white border border-slate-700 transition-all"
+            >
+              Itinerary Planner
+            </Link>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+              Phase 3: Cached AI
+            </span>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+        {/* District Detail Hero Card */}
+        <div className="relative bg-slate-950/40 border border-slate-800 rounded-3xl p-8 mb-10 overflow-hidden shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-teal-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-900 text-teal-400 border border-slate-800 uppercase tracking-wider">
+                {district?.region} Region
+              </span>
+              <div className="flex items-center gap-1.5 text-slate-400 text-xs font-semibold">
+                <Calendar className="h-3.5 w-3.5 text-amber-500/80" />
+                <span>Best: {district?.bestSeason}</span>
+              </div>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+              {district?.name}
+            </h1>
+          </div>
+
+          <button
+            id="regen-ai-btn"
+            onClick={handleRegenerate}
+            disabled={regenerating}
+            className="shrink-0 bg-slate-900 border border-slate-800 hover:border-teal-500/50 hover:bg-slate-950 text-slate-300 font-bold px-5 py-3 rounded-2xl flex items-center gap-2 cursor-pointer shadow-md transition-all text-sm disabled:opacity-50"
+          >
+            {regenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin text-teal-400" />
+                Regenerating Cache...
+              </>
+            ) : (
+              <>
+                <RotateCcw className="h-4 w-4 text-teal-400" />
+                Regenerate AI Content
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Action Alerts */}
+        {regenSuccess && (
+          <div className="bg-emerald-950/20 border border-emerald-900/50 text-emerald-200 px-6 py-4 rounded-2xl mb-8 flex items-center gap-3 animate-fadeIn">
+            <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+            <span className="text-sm font-semibold">Successfully regenerated and cached district AI content in MongoDB.</span>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-950/20 border border-red-900/50 text-red-200 px-6 py-4 rounded-2xl mb-8 flex items-start gap-3 animate-fadeIn">
+            <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-bold text-red-400">Regeneration Failed</h4>
+              <p className="text-slate-300 text-sm mt-1">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Main Grid Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* LEFT COLUMN: Overview & Foods (7 columns) */}
+          <div className="lg:col-span-7 space-y-8">
+            {/* AI Overview Section */}
+            <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/5 rounded-full blur-2xl pointer-events-none" />
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-100">
+                <Sparkles className="h-5 w-5 text-teal-400" /> AI Insights Overview
+              </h2>
+              {loadingOverview ? (
+                <div className="space-y-3 py-4">
+                  <div className="h-4 bg-slate-800 rounded w-full animate-pulse" />
+                  <div className="h-4 bg-slate-800 rounded w-5/6 animate-pulse" />
+                  <div className="h-4 bg-slate-800 rounded w-4/5 animate-pulse" />
+                </div>
+              ) : (
+                <p className="text-slate-300 text-base leading-relaxed font-light">
+                  {overview || 'No AI overview generated yet. Click Regenerate to build one.'}
+                </p>
+              )}
+            </div>
+
+            {/* Food Recommendations Section */}
+            <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl">
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-100">
+                <Utensils className="h-5 w-5 text-amber-500" /> Culinary Recommendations
+              </h2>
+
+              {loadingFood ? (
+                <div className="flex flex-col items-center justify-center py-10">
+                  <Loader2 className="h-8 w-8 text-amber-500 animate-spin" />
+                  <p className="text-xs text-slate-500 mt-2">Curating delicacies...</p>
+                </div>
+              ) : foods.length === 0 ? (
+                <p className="text-slate-500 text-sm italic">No food specialties listed for this district.</p>
+              ) : (
+                <div className="space-y-6">
+                  {foods.map((food) => (
+                    <div
+                      key={food._id}
+                      className="bg-slate-900/60 hover:bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start gap-4 transition-colors"
+                    >
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <h3 className="text-lg font-bold text-slate-200">{food.name}</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-800 bg-slate-950 text-slate-400 uppercase tracking-wider">
+                            {food.type}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 leading-relaxed font-medium italic">
+                          Base: {food.description}
+                        </p>
+                        {food.aiBlurb && (
+                          <div className="mt-2.5 pt-2.5 border-t border-slate-800/50 text-sm text-amber-400/90 leading-relaxed">
+                            <strong className="text-xs uppercase text-amber-500/80 tracking-wider block mb-1">AI Curated Insight:</strong>
+                            {food.aiBlurb}
+                          </div>
+                        )}
+                      </div>
+                      <div className="shrink-0 text-xs font-extrabold text-amber-400 bg-amber-500/5 border border-amber-500/10 px-2.5 py-1 rounded-lg">
+                        {food.priceRange}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Attractions & Hidden Gems (5 columns) */}
+          <div className="lg:col-span-5 space-y-8">
+            {/* Attractions Section */}
+            <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 shadow-xl">
+              <h2 className="text-xl font-bold mb-5 flex items-center gap-2 text-slate-100">
+                <Camera className="h-5 w-5 text-blue-400" /> Major Attractions
+              </h2>
+
+              {loadingAttractions ? (
+                <div className="flex flex-col items-center justify-center py-10">
+                  <Loader2 className="h-8 w-8 text-blue-400 animate-spin" />
+                  <p className="text-xs text-slate-500 mt-2">Loading landmarks...</p>
+                </div>
+              ) : attractions.length === 0 ? (
+                <p className="text-slate-500 text-sm italic">No major attractions listed.</p>
+              ) : (
+                <div className="space-y-4">
+                  {attractions.map((attr) => (
+                    <div
+                      key={attr._id}
+                      className="border border-slate-900 bg-slate-900/40 hover:bg-slate-900/60 p-4 rounded-xl space-y-2 transition-colors"
+                    >
+                      <div className="flex justify-between items-start gap-2">
+                        <h4 className="font-bold text-slate-200 text-sm">{attr.name}</h4>
+                        <span className="text-[9px] font-extrabold bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 uppercase tracking-wider shrink-0">
+                          {attr.type}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400 leading-relaxed">{attr.description}</p>
+                      {attr.tags && attr.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 pt-1">
+                          {attr.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-[9px] text-slate-500 bg-slate-950/60 border border-slate-800/80 px-1.5 py-0.5 rounded"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Hidden Gems Section */}
+            <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+              
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-100">
+                <Gem className="h-5 w-5 text-purple-400 animate-pulse" /> Hidden Gems
+              </h2>
+
+              <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+                Rank these secret local gems by selecting interest tags to align the priorities to your preferences.
+              </p>
+
+              {/* Interests Tags Filter */}
+              <div className="flex flex-wrap gap-1.5 mb-6">
+                {INTERESTS_OPTIONS.map((tag) => {
+                  const active = selectedInterests.includes(tag.id);
+                  return (
+                    <button
+                      key={tag.id}
+                      onClick={() => handleInterestToggle(tag.id)}
+                      className={`text-[10px] font-semibold px-2.5 py-1.5 rounded-lg border transition-all cursor-pointer select-none ${
+                        active
+                          ? 'bg-purple-500/10 border-purple-500 text-purple-400 shadow-md shadow-purple-500/5'
+                          : 'bg-slate-900 border-slate-850 text-slate-400 hover:border-slate-800 hover:text-slate-350'
+                      }`}
+                    >
+                      {tag.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {loadingGems ? (
+                <div className="flex flex-col items-center justify-center py-10">
+                  <Loader2 className="h-8 w-8 text-purple-400 animate-spin" />
+                  <p className="text-xs text-slate-500 mt-2">Ranking gems...</p>
+                </div>
+              ) : hiddenGems.length === 0 ? (
+                <p className="text-slate-500 text-sm italic">No secret gems found.</p>
+              ) : (
+                <div className="space-y-4">
+                  {hiddenGems.map((gem, index) => (
+                    <div
+                      key={gem._id}
+                      className="border border-slate-900 bg-slate-900/40 hover:bg-slate-900/60 p-4 rounded-xl space-y-2 transition-colors relative overflow-hidden"
+                    >
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold h-5 w-5 bg-slate-950 text-purple-400 border border-slate-800 flex items-center justify-center rounded">
+                            {index + 1}
+                          </span>
+                          <h4 className="font-bold text-slate-200 text-sm">{gem.name}</h4>
+                        </div>
+                      </div>
+                      <p className="text-xs text-slate-450 leading-relaxed">{gem.description}</p>
+                      
+                      {gem.reason && selectedInterests.length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-slate-800/50 text-[11px] text-purple-400 italic bg-purple-500/5 p-2 rounded-lg leading-relaxed">
+                          <strong className="text-[9px] uppercase font-bold text-purple-500 block mb-0.5">Relevance match:</strong>
+                          {gem.reason}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

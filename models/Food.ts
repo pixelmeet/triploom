@@ -6,6 +6,8 @@ export interface IFood extends Document {
   type: 'veg' | 'non-veg' | 'street' | 'restaurant';
   description: string;
   priceRange: string;
+  aiBlurb: string;
+  aiBlurbGeneratedAt: Date | null;
 }
 
 const FoodSchema: Schema = new Schema({
@@ -18,6 +20,8 @@ const FoodSchema: Schema = new Schema({
   },
   description: { type: String, required: true },
   priceRange: { type: String, required: true },
+  aiBlurb: { type: String, default: '' },
+  aiBlurbGeneratedAt: { type: Date, default: null },
 });
 
 export default mongoose.models.Food || mongoose.model<IFood>('Food', FoodSchema);
