@@ -300,39 +300,46 @@ export const rawFood = [
 
 export const rawFestivals = [
   {
-    name: "International Kite Festival (Uttarayan)",
+    name: "PLACEHOLDER FESTIVAL - AHMEDABAD (VERIFY)",
     districtName: "Ahmedabad",
-    startDate: new Date("2026-01-14T00:00:00Z"),
-    endDate: new Date("2026-01-15T23:59:59Z"),
-    description: "The sky comes alive with millions of colorful kites. Families gather on rooftops, flying kites, playing music, and eating undhiyu and jalebi."
+    startDate: new Date("2026-10-01T00:00:00Z"),
+    endDate: new Date("2026-10-05T23:59:59Z"),
+    description: "PLACEHOLDER FESTIVAL DESCRIPTION - High crowds expected at major venues, expect heavy traffic and elevated accommodation rates."
   },
   {
-    name: "Rann Utsav",
+    name: "PLACEHOLDER FESTIVAL - KUTCH (VERIFY)",
     districtName: "Kutch",
-    startDate: new Date("2025-11-01T00:00:00Z"),
-    endDate: new Date("2026-02-28T23:59:59Z"),
-    description: "A three-month winter festival in the white desert, showcasing regional music, folk dances, Kutchi embroidery, camel safaris, and luxury tent living."
+    startDate: new Date("2026-11-01T00:00:00Z"),
+    endDate: new Date("2026-11-10T23:59:59Z"),
+    description: "PLACEHOLDER FESTIVAL DESCRIPTION - Cultural showcase with night desert camps, high demand for tent bookings."
   },
   {
-    name: "Maha Shivratri Mela (Bhavnath Fair)",
+    name: "PLACEHOLDER FESTIVAL - JUNAGADH (VERIFY)",
     districtName: "Junagadh",
     startDate: new Date("2026-02-15T00:00:00Z"),
     endDate: new Date("2026-02-20T23:59:59Z"),
-    description: "A deeply spiritual gathering at the foot of Girnar Hill, where Naga Sadhus (ascetics) perform spectacular processions and holy baths."
+    description: "PLACEHOLDER FESTIVAL DESCRIPTION - Religious gathering near Girnar foothills, large pilgrim footfall."
   },
   {
-    name: "Krishna Janmashtami",
+    name: "PLACEHOLDER FESTIVAL - DWARKA (VERIFY)",
     districtName: "Dwarka",
-    startDate: new Date("2026-09-03T00:00:00Z"),
-    endDate: new Date("2026-09-04T23:59:59Z"),
-    description: "The grand birthday celebration of Lord Krishna in his ancient capital, featuring midnight prayers, temple decorations, and Dahi Handi competitions."
+    startDate: new Date("2026-09-01T00:00:00Z"),
+    endDate: new Date("2026-09-05T23:59:59Z"),
+    description: "PLACEHOLDER FESTIVAL DESCRIPTION - Temple celebrations, road closures around main town square."
   },
   {
-    name: "Vadodara Navratri Festival",
+    name: "PLACEHOLDER FESTIVAL - VADODARA (VERIFY)",
     districtName: "Vadodara",
-    startDate: new Date("2026-10-11T00:00:00Z"),
-    endDate: new Date("2026-10-19T23:59:59Z"),
-    description: "The world's largest garba festival, characterized by massive circular folk dancing in traditional attire, featuring traditional singers under vast open grounds."
+    startDate: new Date("2026-10-10T00:00:00Z"),
+    endDate: new Date("2026-10-15T23:59:59Z"),
+    description: "PLACEHOLDER FESTIVAL DESCRIPTION - Evening cultural dance performances, evening traffic restrictions."
+  },
+  {
+    name: "PLACEHOLDER FESTIVAL - NARMADA (VERIFY)",
+    districtName: "Narmada (Kevadia)",
+    startDate: new Date("2026-12-01T00:00:00Z"),
+    endDate: new Date("2026-12-05T23:59:59Z"),
+    description: "PLACEHOLDER FESTIVAL DESCRIPTION - Eco-tourism event near dam site, advance entry pass recommended."
   }
 ];
 

@@ -43,4 +43,5 @@ next-env.d.ts
 
 # agent temp files
 /.tmp/
+scratch/
 

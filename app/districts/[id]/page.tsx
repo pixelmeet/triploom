@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
 import {
   Sparkles,
   MapPin,
@@ -20,6 +21,9 @@ import {
   Thermometer,
   Droplets,
   Wind,
+  PartyPopper,
+  CalendarDays,
+  X,
 } from 'lucide-react';
 
 interface District {
@@ -61,6 +65,15 @@ interface WeatherData {
   windSpeedKmh: number;
 }
 
+interface FestivalItem {
+  _id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  suggestion?: string;
+}
+
 const INTERESTS_OPTIONS = [
   { id: 'heritage', label: 'Heritage & Palaces' },
   { id: 'nature', label: 'Nature & Scenic Views' },
@@ -86,6 +99,10 @@ export default function DistrictDetailPage() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [weatherAdvice, setWeatherAdvice] = useState<string | null>(null);
 
+  const [festivals, setFestivals] = useState<FestivalItem[]>([]);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   // Loaders
   const [loadingDistrict, setLoadingDistrict] = useState(true);
   const [loadingOverview, setLoadingOverview] = useState(true);
@@ -93,7 +110,9 @@ export default function DistrictDetailPage() {
   const [loadingFood, setLoadingFood] = useState(true);
   const [loadingGems, setLoadingGems] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
+  const [loadingFestivals, setLoadingFestivals] = useState(true);
   const [weatherError, setWeatherError] = useState<string | null>(null);
+  const [festivalError, setFestivalError] = useState<string | null>(null);
 
   // Actions
   const [regenerating, setRegenerating] = useState(false);
@@ -225,6 +244,33 @@ export default function DistrictDetailPage() {
     }
     loadWeather();
   }, [id]);
+
+  // Fetch Festivals (Default list + optional date range match)
+  useEffect(() => {
+    if (!id) return;
+    async function loadFestivals() {
+      try {
+        setLoadingFestivals(true);
+        setFestivalError(null);
+        let url = `/api/districts/${id}/festivals`;
+        if (startDate && endDate) {
+          url += `?startDate=${startDate}&endDate=${endDate}`;
+        }
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to fetch festival data');
+        }
+        setFestivals(data);
+      } catch (err: any) {
+        console.error('Festival load error:', err);
+        setFestivalError(err?.message || 'Failed to fetch festival data');
+      } finally {
+        setLoadingFestivals(false);
+      }
+    }
+    loadFestivals();
+  }, [id, startDate, endDate]);
 
   const handleInterestToggle = (interestId: string) => {
     setSelectedInterests((prev) =>
@@ -452,6 +498,129 @@ export default function DistrictDetailPage() {
                       </p>
                     </div>
                   )}
+                </div>
+              )}
+            </div>
+
+            {/* Festivals & Events Section */}
+            <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+              
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <h2 className="text-xl font-bold flex items-center gap-2 text-slate-100">
+                  <PartyPopper className="h-5 w-5 text-purple-400" /> Festivals & Event Matching
+                </h2>
+                <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-purple-950/60 text-purple-400 border border-purple-800/60">
+                  Seeded Data & AI Match
+                </span>
+              </div>
+
+              {/* Date Filter Bar */}
+              <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 mb-6">
+                <div className="text-xs font-semibold text-slate-300 mb-3 flex items-center gap-1.5">
+                  <CalendarDays className="h-4 w-4 text-purple-400" />
+                  <span>Check Trip Dates for Festival Matches & Insights:</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                  <div>
+                    <label htmlFor="festival-start-date" className="block text-[11px] font-medium text-slate-400 mb-1">
+                      Start Date
+                    </label>
+                    <Input
+                      id="festival-start-date"
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="bg-slate-950 border-slate-800 text-slate-200 text-xs focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="festival-end-date" className="block text-[11px] font-medium text-slate-400 mb-1">
+                      End Date
+                    </label>
+                    <Input
+                      id="festival-end-date"
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="bg-slate-950 border-slate-800 text-slate-200 text-xs focus:ring-purple-500"
+                    />
+                  </div>
+                </div>
+                {(startDate || endDate) && (
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setStartDate('');
+                        setEndDate('');
+                      }}
+                      className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <X className="h-3.5 w-3.5" /> Clear Date Filter
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Festivals List */}
+              {loadingFestivals ? (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 text-purple-400 animate-spin" />
+                  <p className="text-xs text-slate-500 mt-2">Checking festival calendar...</p>
+                </div>
+              ) : festivalError ? (
+                <div className="bg-red-950/20 border border-red-900/50 text-red-300 p-4 rounded-2xl text-xs flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
+                  <span>{festivalError}</span>
+                </div>
+              ) : festivals.length === 0 ? (
+                <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 text-center text-slate-400 text-sm italic">
+                  No festival data available yet
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {festivals.map((fest) => {
+                    const startFmt = new Date(fest.startDate).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                      timeZone: 'UTC',
+                    });
+                    const endFmt = new Date(fest.endDate).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                      timeZone: 'UTC',
+                    });
+
+                    return (
+                      <div
+                        key={fest._id}
+                        className="bg-slate-900/60 hover:bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 transition-colors"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <h3 className="text-base font-bold text-slate-100">{fest.name}</h3>
+                          <div className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 shrink-0 self-start sm:self-auto">
+                            <Calendar className="h-3.5 w-3.5 text-purple-400" />
+                            <span>{startFmt} – {endFmt}</span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-slate-300 leading-relaxed font-light">
+                          {fest.description}
+                        </p>
+
+                        {fest.suggestion && (
+                          <div className="mt-3 pt-3 border-t border-purple-900/40 bg-purple-950/30 border border-purple-800/50 rounded-xl p-3 text-xs text-purple-200 leading-relaxed">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-purple-400 uppercase tracking-wider mb-1">
+                              <Sparkles className="h-3.5 w-3.5 text-purple-400" /> AI Itinerary & Visit Impact:
+                            </div>
+                            {fest.suggestion}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
