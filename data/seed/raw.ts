@@ -347,77 +347,79 @@ export const rawSafetyInfo = [
   {
     districtName: "Ahmedabad",
     emergencyContacts: [
-      { label: "Tourist Helpline", number: "1800-233-7951" },
-      { label: "City Police Control Room", number: "100" },
-      { label: "Ahmedabad Medical Emergency", number: "108" }
+      { label: "PLACEHOLDER - Local Police (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Medical / Ambulance (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Fire Control (VERIFY)", number: "000-000-0000" }
     ],
     guidelines: [
-      "Use official app-based cabs (Uber/Ola) or pre-paid auto rickshaws at transit hubs to prevent overcharging.",
-      "Ahmedabad (and all of Gujarat) is dry state: purchasing, transporting, or drinking alcohol without a valid permit is strictly prohibited by law.",
-      "Dress modestly when visiting historic mosques (like Sidi Saiyyed) and temples (like Hutheesing Jain Temple). Ensure shoulders and knees are covered."
+      "PLACEHOLDER GUIDELINE (VERIFY): Use official app-based cabs or pre-paid auto rickshaws at transit hubs to avoid overcharging.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Gujarat is a dry state; purchasing or consuming alcohol without a valid permit is illegal.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Dress modestly when visiting historic religious sites, ensuring shoulders and knees are covered."
     ]
   },
   {
     districtName: "Kutch",
     emergencyContacts: [
-      { label: "Bhuj Police Station", number: "+91-2832-250800" },
-      { label: "Rann Border Security Post", number: "+91-2832-252155" },
-      { label: "Kutch District Hospital", number: "102" }
+      { label: "PLACEHOLDER - Local Police (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Medical / Ambulance (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Fire Control (VERIFY)", number: "000-000-0000" }
     ],
     guidelines: [
-      "Since Rann is close to the international border, visitors must obtain an entry permit online (rannpermit.com) or at the Bhirandiyara check post before proceeding.",
-      "Carry ample cash and keep your fuel tank filled: ATMs and fuel stations are sparse in the northern desert areas.",
-      "Temperature fluctuates drastically in winter: carry heavy woolens for night desert safaris, but lighter wear is suitable for sunny afternoons."
+      "PLACEHOLDER GUIDELINE (VERIFY): Visitors must obtain an entry permit before visiting the Great Rann of Kutch border area.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Carry adequate cash and fuel as ATMs and stations are sparse in rural desert areas.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Pack warm clothing for extreme desert temperature drops during winter nights."
     ]
   },
   {
     districtName: "Junagadh",
     emergencyContacts: [
-      { label: "Sasan Gir Forest Office", number: "+91-2877-285541" },
-      { label: "Junagadh Civil Hospital", number: "+91-285-2630252" },
-      { label: "Gir National Park Emergency", number: "1926" }
+      { label: "PLACEHOLDER - Local Police (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Medical / Ambulance (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Fire Control (VERIFY)", number: "000-000-0000" }
     ],
     guidelines: [
-      "Book Gir Safari permits only through the official portal (girlion.gujarat.gov.in) months in advance. Do not buy from street agents.",
-      "When climbing Girnar hill, start early in the morning (around 4:00 AM) to avoid the intense midday heat. Keep yourself hydrated.",
-      "Avoid feeding or disturbing wild animals during safaris. Wear neutral, earthy colors (khaki, olive, brown) to avoid drawing wildlife attention."
+      "PLACEHOLDER GUIDELINE (VERIFY): Book Gir National Park safari permits strictly via official state government portals.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Start early morning when trekking Girnar Hill to prevent dehydration and heat exhaustion.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Maintain safe distance and wear neutral colors during wildlife park excursions."
     ]
   },
   {
     districtName: "Dwarka",
     emergencyContacts: [
-      { label: "Dwarka Police Helpline", number: "+91-2892-234007" },
-      { label: "Dwarka Civil Hospital", number: "+91-2892-234204" },
-      { label: "Marine Emergency Helpline", number: "1093" }
+      { label: "PLACEHOLDER - Local Police (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Medical / Ambulance (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Fire Control (VERIFY)", number: "000-000-0000" }
     ],
     guidelines: [
-      "Mobile phones, cameras, leather items (belts/wallets) are strictly forbidden inside the main Dwarkadhish temple. Use the paid luggage counter near the entrance.",
-      "Beware of self-proclaimed local priests (Pandas) who demand expensive rituals. Settle prices beforehand or visit through temple office.",
-      "Check high-tide schedules before taking ferries to Bet Dwarka or walking along the coastal rocks near Gomti Ghat."
+      "PLACEHOLDER GUIDELINE (VERIFY): Electronic devices and leather items are restricted inside Dwarkadhish Temple.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Avoid unauthorized agents offering expedited religious rituals or VIP tickets.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Check ocean tide timetables before taking coastal boat trips to Bet Dwarka."
     ]
   },
   {
     districtName: "Vadodara",
     emergencyContacts: [
-      { label: "Vadodara Police Control Room", number: "+91-265-2415100" },
-      { label: "S.S.G. Public Hospital", number: "+91-265-2436041" }
+      { label: "PLACEHOLDER - Local Police (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Medical / Ambulance (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Fire Control (VERIFY)", number: "000-000-0000" }
     ],
     guidelines: [
-      "Use the audio guide at Laxmi Vilas Palace for an authentic tour—avoid unauthorized local guides offering shortcuts.",
-      "During Navratri, plan transportation well in advance as roads leading to Garba grounds get severely congested between 8:00 PM and 2:00 AM.",
-      "Purchase traditional clay handicrafts or clothes only from recognized emporiums or verified street stalls."
+      "PLACEHOLDER GUIDELINE (VERIFY): Use authorized audio guides when exploring royal palaces and heritage complexes.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Plan travel early during Navratri festival evenings to avoid heavy road traffic.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Keep emergency contact details accessible when exploring crowded city markets."
     ]
   },
   {
     districtName: "Narmada (Kevadia)",
     emergencyContacts: [
-      { label: "Kevadia Tourist Helpdesk", number: "+91-2640-227000" },
-      { label: "Statue of Unity Medical Center", number: "108" }
+      { label: "PLACEHOLDER - Local Police (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Medical / Ambulance (VERIFY)", number: "000-000-0000" },
+      { label: "PLACEHOLDER - Fire Control (VERIFY)", number: "000-000-0000" }
     ],
     guidelines: [
-      "Book tickets for the Statue of Unity viewing gallery and laser show online in advance. Tickets are limited and sell out early.",
-      "Use the eco-friendly electric buses provided within the Kevadia tour complex. Private vehicles are restricted past the main parking plaza.",
-      "Keep safety barriers in mind around the Narmada River and waterfalls, particularly during monsoon season when water levels swell rapidly."
+      "PLACEHOLDER GUIDELINE (VERIFY): Reserve Statue of Unity entry passes online in advance as daily quotas fill quickly.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Utilize official electric shuttle buses within the Kevadia tourism zone.",
+      "PLACEHOLDER GUIDELINE (VERIFY): Adhere strictly to water safety warnings near Narmada River dams and waterfalls."
     ]
   }
 ];

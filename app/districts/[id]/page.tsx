@@ -24,6 +24,9 @@ import {
   PartyPopper,
   CalendarDays,
   X,
+  ShieldAlert,
+  PhoneCall,
+  ShieldCheck
 } from 'lucide-react';
 
 interface District {
@@ -74,6 +77,16 @@ interface FestivalItem {
   suggestion?: string;
 }
 
+interface EmergencyContact {
+  label: string;
+  number: string;
+}
+
+interface SafetyData {
+  emergencyContacts: EmergencyContact[];
+  guidelines: string[];
+}
+
 const INTERESTS_OPTIONS = [
   { id: 'heritage', label: 'Heritage & Palaces' },
   { id: 'nature', label: 'Nature & Scenic Views' },
@@ -103,6 +116,8 @@ export default function DistrictDetailPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  const [safetyData, setSafetyData] = useState<SafetyData | null>(null);
+
   // Loaders
   const [loadingDistrict, setLoadingDistrict] = useState(true);
   const [loadingOverview, setLoadingOverview] = useState(true);
@@ -111,8 +126,11 @@ export default function DistrictDetailPage() {
   const [loadingGems, setLoadingGems] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [loadingFestivals, setLoadingFestivals] = useState(true);
+  const [loadingSafety, setLoadingSafety] = useState(true);
+
   const [weatherError, setWeatherError] = useState<string | null>(null);
   const [festivalError, setFestivalError] = useState<string | null>(null);
+  const [safetyError, setSafetyError] = useState<string | null>(null);
 
   // Actions
   const [regenerating, setRegenerating] = useState(false);
@@ -272,6 +290,29 @@ export default function DistrictDetailPage() {
     loadFestivals();
   }, [id, startDate, endDate]);
 
+  // Fetch Safety Info
+  useEffect(() => {
+    if (!id) return;
+    async function loadSafety() {
+      try {
+        setLoadingSafety(true);
+        setSafetyError(null);
+        const res = await fetch(`/api/districts/${id}/safety`);
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to fetch safety info');
+        }
+        setSafetyData(data);
+      } catch (err: any) {
+        console.error('Safety load error:', err);
+        setSafetyError(err?.message || 'Failed to fetch safety info');
+      } finally {
+        setLoadingSafety(false);
+      }
+    }
+    loadSafety();
+  }, [id]);
+
   const handleInterestToggle = (interestId: string) => {
     setSelectedInterests((prev) =>
       prev.includes(interestId) ? prev.filter((i) => i !== interestId) : [...prev, interestId]
@@ -400,7 +441,7 @@ export default function DistrictDetailPage() {
 
         {/* Main Grid Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* LEFT COLUMN: Weather, Overview & Foods (7 columns) */}
+          {/* LEFT COLUMN: Weather, Safety, Festivals, Overview & Foods (7 columns) */}
           <div className="lg:col-span-7 space-y-8">
             {/* Live Weather & AI Advice Section */}
             <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
@@ -481,6 +522,83 @@ export default function DistrictDetailPage() {
                       <p className="text-slate-300 text-sm leading-relaxed font-light">
                         {weatherAdvice}
                       </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Safety Info & Emergency Contacts Section */}
+            <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+              
+              <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
+                <h2 className="text-xl font-bold flex items-center gap-2 text-slate-100">
+                  <ShieldAlert className="h-5 w-5 text-rose-400" /> Safety Info & Emergency Contacts
+                </h2>
+                <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-rose-950/60 text-rose-400 border border-rose-800/60">
+                  Verified Guidelines
+                </span>
+              </div>
+
+              {loadingSafety ? (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 text-rose-400 animate-spin" />
+                  <p className="text-xs text-slate-500 mt-2">Loading safety contacts & guidelines...</p>
+                </div>
+              ) : safetyError ? (
+                <div className="bg-red-950/20 border border-red-900/50 text-red-300 p-4 rounded-2xl text-xs flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
+                  <span>{safetyError}</span>
+                </div>
+              ) : !safetyData || (safetyData.emergencyContacts.length === 0 && safetyData.guidelines.length === 0) ? (
+                <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 text-center text-slate-400 text-sm italic">
+                  No safety data available yet
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Emergency Contacts Cards */}
+                  {safetyData.emergencyContacts.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        Emergency Contacts (Direct Seeded)
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {safetyData.emergencyContacts.map((contact, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-slate-900/80 border border-rose-950/50 hover:border-rose-900/80 rounded-2xl p-4 flex flex-col justify-between space-y-2 transition-colors"
+                          >
+                            <div className="flex items-center gap-2 text-rose-400 text-xs font-bold">
+                              <PhoneCall className="h-3.5 w-3.5 shrink-0" />
+                              <span className="truncate">{contact.label}</span>
+                            </div>
+                            <div className="text-base font-extrabold text-white tracking-wide">
+                              {contact.number}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Safety Guidelines List */}
+                  {safetyData.guidelines.length > 0 && (
+                    <div className="space-y-3 pt-2">
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        Travel & Safety Guidelines
+                      </h3>
+                      <div className="space-y-2.5">
+                        {safetyData.guidelines.map((guideline, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex items-start gap-3 text-xs text-slate-300 leading-relaxed"
+                          >
+                            <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>{guideline}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -678,7 +796,7 @@ export default function DistrictDetailPage() {
 
           {/* RIGHT COLUMN: Attractions & Hidden Gems (5 columns) */}
           <div className="lg:col-span-5 space-y-8">
-            {/* Attractions Section */}
+            {/* Major Attractions Section */}
             <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 shadow-xl">
               <h2 className="text-xl font-bold mb-5 flex items-center gap-2 text-slate-100">
                 <Camera className="h-5 w-5 text-blue-400" /> Major Attractions
