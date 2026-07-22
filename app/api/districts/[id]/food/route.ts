@@ -4,6 +4,7 @@ import dbConnect from '@/lib/db';
 import District from '@/models/District';
 import Food from '@/models/Food';
 import { buildFoodRecommendationPrompt } from '@/lib/prompts/foodRecommendations';
+import { PROMPT_CONFIGS } from '@/lib/prompts/config';
 import { callGroq, GroqError } from '@/lib/groq';
 import { getCachedOrGenerate } from '@/lib/cache';
 
@@ -72,7 +73,7 @@ export async function GET(
           groundingFood
         );
 
-        const rawResult = await callGroq(systemPrompt, userPrompt);
+        const rawResult = await callGroq(systemPrompt, userPrompt, PROMPT_CONFIGS.FOOD_RECOMMENDATIONS);
 
         if (
           !rawResult ||

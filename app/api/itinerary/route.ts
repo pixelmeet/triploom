@@ -9,6 +9,7 @@ import HiddenGem from '@/models/HiddenGem';
 import Food from '@/models/Food';
 import Itinerary from '@/models/Itinerary';
 import { buildItineraryPrompt } from '@/lib/prompts/itinerary';
+import { PROMPT_CONFIGS } from '@/lib/prompts/config';
 import { callGroq, GroqError } from '@/lib/groq';
 
 export const dynamic = 'force-dynamic';
@@ -157,7 +158,7 @@ export async function POST(req: Request) {
     // Call Groq AI
     let rawResult: any;
     try {
-      rawResult = await callGroq(systemPrompt, userPrompt);
+      rawResult = await callGroq(systemPrompt, userPrompt, PROMPT_CONFIGS.ITINERARY);
     } catch (error: any) {
       console.error('Groq client wrapper error:', error);
       if (error instanceof GroqError) {

@@ -1,7 +1,9 @@
+import { formatHiddenGems, serializeGrounding } from './helpers';
+
 interface HiddenGemItem {
   name: string;
-  tags: string[];
-  description: string;
+  tags?: string[];
+  description?: string;
 }
 
 interface DistrictInput {
@@ -14,37 +16,24 @@ interface DistrictInput {
  */
 export function buildHiddenGemsRankingPrompt(
   district: DistrictInput,
-  hiddenGems: HiddenGemItem[],
+  rawHiddenGems: HiddenGemItem[],
   interests: string[]
 ) {
-  const systemPrompt = `You are an expert tour guide specializing in off-the-beaten-path travel in Gujarat, India.
-Your task is to rank the provided list of hidden gems in order of relevance to the user's interests, and provide a short, single-sentence reason for each gem's ranking.
+  const hiddenGems = formatHiddenGems(rawHiddenGems);
+
+  const systemPrompt = `You are a tour guide specializing in off-the-beaten-path travel in Gujarat, India.
+Rank the provided hidden gems in order of relevance to the user's interests, providing a 1-sentence reason for each.
 
 CRITICAL RULES:
-1. Grounding: You MUST ONLY rank and include hidden gems that are explicitly provided in the input list. Do NOT invent or add any new hidden gems.
-2. Accuracy: The "name" in the ranked list must EXACTLY match the "name" of the corresponding input hidden gem.
-3. Reason: Provide a compelling, short reason (1 sentence) for the ranking based on how it fits the user's interests and its description/tags.
-4. Structure: The output must be valid JSON only. Output must strictly follow the JSON schema below.
+1. Grounding: ONLY rank hidden gems present in the input list. Do NOT invent or add hidden gems.
+2. Accuracy: Each output "name" MUST EXACTLY match the input hidden gem "name".
+3. Reason: Provide a 1-sentence reason matching user interests and item details.
+4. Structure: Output valid JSON matching {"ranked":[{"name":"string","reason":"string"}]}.`;
 
-JSON Schema:
-{
-  "ranked": [
-    {
-      "name": "string",
-      "reason": "string"
-    }
-  ]
-}
-`;
-
-  const userPrompt = `Rank the following hidden gems for the district of ${district.name} based on the user's interests.
-
-User Interests:
-${interests.join(', ')}
-
-Hidden Gems list:
-${JSON.stringify(hiddenGems, null, 2)}
-`;
+  const userPrompt = `District: ${district.name}
+User Interests: ${interests.join(', ')}
+Hidden Gems:
+${serializeGrounding(hiddenGems)}`;
 
   return { systemPrompt, userPrompt };
 }

@@ -4,6 +4,7 @@ import dbConnect from '@/lib/db';
 import District from '@/models/District';
 import SafetyInfo from '@/models/SafetyInfo';
 import { buildSafetyTonePrompt } from '@/lib/prompts/safetyTone';
+import { PROMPT_CONFIGS } from '@/lib/prompts/config';
 import { callGroq, GroqError } from '@/lib/groq';
 
 export const dynamic = 'force-dynamic';
@@ -62,7 +63,7 @@ export async function GET(
         guidelines: rawGuidelines,
       });
 
-      const rawResult: any = await callGroq(systemPrompt, userPrompt);
+      const rawResult: any = await callGroq(systemPrompt, userPrompt, PROMPT_CONFIGS.SAFETY_TONE);
 
       // Validate AI response shape and length match
       if (

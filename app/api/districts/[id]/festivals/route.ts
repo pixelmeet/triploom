@@ -4,6 +4,7 @@ import dbConnect from '@/lib/db';
 import District from '@/models/District';
 import Festival from '@/models/Festival';
 import { buildFestivalMatchPrompt } from '@/lib/prompts/festivalMatch';
+import { PROMPT_CONFIGS } from '@/lib/prompts/config';
 import { callGroq, GroqError } from '@/lib/groq';
 
 export const dynamic = 'force-dynamic';
@@ -63,7 +64,7 @@ export async function GET(
             { start: startDateStr, end: endDateStr }
           );
 
-          const rawResult = await callGroq(systemPrompt, userPrompt);
+          const rawResult = await callGroq(systemPrompt, userPrompt, PROMPT_CONFIGS.FESTIVAL_MATCH);
 
           if (
             !rawResult ||

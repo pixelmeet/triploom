@@ -10,6 +10,13 @@ export class GroqError extends Error {
   }
 }
 
+export interface GroqOptions {
+  model?: string;
+  temperature?: number;
+  max_tokens?: number;
+  response_format?: { type: 'json_object' };
+}
+
 /**
  * Call the Groq API with system and user prompts.
  * Requests JSON output and enforces llama-3.3-70b-versatile by default.
@@ -17,17 +24,39 @@ export class GroqError extends Error {
 export async function callGroq(
   systemPrompt: string,
   userPrompt: string,
-  model = 'llama-3.3-70b-versatile'
+  optionsOrModel?: string | GroqOptions
 ): Promise<unknown> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     throw new Error('Please define the GROQ_API_KEY environment variable inside .env');
   }
 
+  const options: GroqOptions =
+    typeof optionsOrModel === 'string'
+      ? { model: optionsOrModel }
+      : optionsOrModel || {};
+
+  const model = options.model || 'llama-3.3-70b-versatile';
+  const temperature = options.temperature ?? 0.2;
+
   const isDev = process.env.NODE_ENV === 'development';
 
   if (isDev) {
-    console.log('[DEBUG] Calling Groq API with model:', model);
+    console.log('[DEBUG] Calling Groq API with model:', model, 'temp:', temperature, 'max_tokens:', options.max_tokens);
+  }
+
+  const requestBody: Record<string, any> = {
+    model,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+    response_format: options.response_format || { type: 'json_object' },
+    temperature,
+  };
+
+  if (options.max_tokens) {
+    requestBody.max_tokens = options.max_tokens;
   }
 
   let response: Response;
@@ -38,15 +67,7 @@ export async function callGroq(
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        response_format: { type: 'json_object' },
-        temperature: 0.2,
-      }),
+      body: JSON.stringify(requestBody),
     });
   } catch (error: any) {
     if (isDev) {

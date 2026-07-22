@@ -1,3 +1,11 @@
+import {
+  formatAttractions,
+  formatHiddenGems,
+  formatFood,
+  formatItineraryDaysForChat,
+  serializeGrounding,
+} from './helpers';
+
 export interface ChatGroundingItem {
   name: string;
   type?: string;
@@ -23,72 +31,50 @@ export interface ChatMessage {
  * Strictly grounded in provided database items or current itinerary places.
  */
 export function buildChatAssistantPrompt(
-  itinerary: any[],
-  groundingData: ChatGroundingData,
+  rawItinerary: any[],
+  rawGrounding: ChatGroundingData,
   conversationHistory: ChatMessage[],
   userMessage: string
 ) {
-  const systemPrompt = `You are an AI travel assistant for TripLoom, specialized in helping users adjust and refine their saved travel itineraries for Gujarat, India.
+  const itineraryDays = formatItineraryDaysForChat(rawItinerary);
+  const groundingData = {
+    attractions: formatAttractions(rawGrounding.attractions),
+    hiddenGems: formatHiddenGems(rawGrounding.hiddenGems),
+    food: formatFood(rawGrounding.food),
+  };
 
-Your task is to analyze the user's message alongside the current itinerary and grounding database, and respond with either a conversational reply OR a modified itinerary if the user asked for changes.
+  const systemPrompt = `You are an AI travel assistant for TripLoom helping users refine saved itineraries for Gujarat, India.
+Respond with valid JSON matching EXACTLY one of these two schemas:
 
-RESPONSE FORMAT:
-You MUST respond with valid JSON matching EXACTLY one of the following two schemas:
+Schema 1 (Conversational reply with NO itinerary edits):
+{"type":"reply","message":"Text reply here"}
 
-Schema 1 (Conversational reply with NO itinerary changes):
-{
-  "type": "reply",
-  "message": "Your text response here"
-}
-
-Schema 2 (Edit itinerary based on user request):
-{
-  "type": "edit",
-  "message": "Brief text explanation of changes made",
-  "updatedDays": [
-    {
-      "day": 1,
-      "district": "string",
-      "items": [
-        {
-          "time": "09:00 AM",
-          "name": "string",
-          "type": "attraction",
-          "estimatedCost": 100,
-          "notes": "string"
-        }
-      ],
-      "dailyEstimatedCost": 100
-    }
-  ]
-}
+Schema 2 (Edit itinerary per user request):
+{"type":"edit","message":"Explanation of changes","updatedDays":[{"day":1,"district":"string","items":[{"time":"09:00 AM","name":"string","type":"attraction | food | hidden_gem","estimatedCost":0,"notes":"string"}],"dailyEstimatedCost":0}]}
 
 CRITICAL RULES:
-1. Grounding & Anti-Hallucination: You MUST ONLY use place names (attractions, hidden gems, restaurants, food places) that are explicitly provided in the user's grounding data OR already present in the current itinerary's days. You must NEVER hallucinate or invent new place names, cafes, or attractions.
-2. Choose "edit" vs "reply":
-   - Use "type": "edit" ONLY when the user explicitly requests an itinerary change (e.g. "swap day 2", "make day 1 cheaper", "add food stops", "remove museum").
-   - Use "type": "reply" when the user is asking a general question, asking for advice, or making general conversation without asking to edit the itinerary structure.
-3. Daily Estimated Cost: When modifying items in a day, ensure "dailyEstimatedCost" matches the sum of all "estimatedCost" values for that day's items.
-4. Structure: Maintain valid structure, times, types ("attraction", "food", or "hidden_gem"), and notes for all items in "updatedDays".
-`;
+1. Grounding & Anti-Hallucination: ONLY use place names provided in grounding data or present in current itinerary. NEVER invent new places, cafes, or attractions.
+2. Response Type:
+   - Use "type":"edit" ONLY when user explicitly asks to alter itinerary structure/items (e.g. "swap day 2", "make day 1 cheaper", "remove museum").
+   - Use "type":"reply" for questions, advice, or general conversation.
+3. Daily Cost: "dailyEstimatedCost" must equal the sum of item "estimatedCost" values for that day.`;
 
   const formattedHistory =
     conversationHistory && conversationHistory.length > 0
       ? conversationHistory.map((m) => `${m.role.toUpperCase()}: ${m.content}`).join('\n')
       : 'None';
 
-  const userPrompt = `Current Itinerary Days:
-${JSON.stringify(itinerary, null, 2)}
+  const userPrompt = `Current Itinerary:
+${serializeGrounding(itineraryDays)}
 
-Grounding Data (Allowed place names to add/swap):
-${JSON.stringify(groundingData, null, 2)}
+Grounding Data (Allowed places to add/swap):
+${serializeGrounding(groundingData)}
 
-Conversation History:
+History:
 ${formattedHistory}
 
-New User Message:
-${userMessage}
-`;
+User Message:
+${userMessage}`;
 
   return { systemPrompt, userPrompt };
 }

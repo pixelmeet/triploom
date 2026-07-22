@@ -5,6 +5,7 @@ import District from '@/models/District';
 import Attraction from '@/models/Attraction';
 import HiddenGem from '@/models/HiddenGem';
 import { buildDistrictOverviewPrompt } from '@/lib/prompts/districtOverview';
+import { PROMPT_CONFIGS } from '@/lib/prompts/config';
 import { callGroq, GroqError } from '@/lib/groq';
 import { getCachedOrGenerate } from '@/lib/cache';
 
@@ -72,7 +73,7 @@ export async function GET(
           groundingData
         );
 
-        const rawResult = await callGroq(systemPrompt, userPrompt);
+        const rawResult = await callGroq(systemPrompt, userPrompt, PROMPT_CONFIGS.DISTRICT_OVERVIEW);
 
         if (
           !rawResult ||

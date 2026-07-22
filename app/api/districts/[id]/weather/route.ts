@@ -4,6 +4,7 @@ import dbConnect from '@/lib/db';
 import District from '@/models/District';
 import { getWeatherForDistrict, WeatherError, WeatherData } from '@/lib/weather';
 import { buildWeatherAdvicePrompt } from '@/lib/prompts/weatherAdvice';
+import { PROMPT_CONFIGS } from '@/lib/prompts/config';
 import { callGroq, GroqError } from '@/lib/groq';
 import { getCachedOrGenerate } from '@/lib/cache';
 
@@ -59,7 +60,7 @@ export async function GET(
           weather
         );
 
-        const rawResult = await callGroq(systemPrompt, userPrompt);
+        const rawResult = await callGroq(systemPrompt, userPrompt, PROMPT_CONFIGS.WEATHER_ADVICE);
 
         if (
           !rawResult ||

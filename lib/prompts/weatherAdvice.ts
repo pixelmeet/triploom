@@ -11,31 +11,17 @@ interface DistrictInfo {
  */
 export function buildWeatherAdvicePrompt(district: DistrictInfo, weather: WeatherData) {
   const systemPrompt = `You are an expert travel advisor for Gujarat, India.
-Your task is to generate 2 to 3 sentences of practical, natural-language travel advice for a visitor based STRICTLY on the current weather data provided.
+Generate 2 to 3 sentences of practical travel advice based STRICTLY on current weather data and best season.
 
 CRITICAL RULES:
-1. Grounding: Rely ONLY on the numeric and textual weather metrics provided (temperature, condition, humidity, wind speed) and the district's best season. Do NOT invent multi-day forecasts, future weather trends, or unprovided weather conditions.
-2. Content: Mention practical advice such as what to pack/wear, suitability for outdoor attractions today, and a relevant seasonal note referencing the district's best season (${district.bestSeason}).
-3. Sentence limit: Exactly 2 to 3 sentences.
-4. Structure: The output must be valid JSON only matching the schema below.
+1. Grounding: Rely ONLY on provided weather metrics (temperature, condition, humidity, wind) and best season (${district.bestSeason}). Do NOT invent unprovided metrics or forecasts.
+2. Content: Include practical advice (what to wear, outdoor suitability) and reference best season (${district.bestSeason}).
+3. Length: Exactly 2 to 3 sentences.
+4. Structure: Output valid JSON matching {"advice":"string"}.`;
 
-JSON Schema:
-{
-  "advice": "string"
-}
-`;
-
-  const userPrompt = `Generate weather-based travel advice for:
-
-District: ${district.name}
-Best Season to Visit: ${district.bestSeason}
-
-Current Weather Data:
-- Temperature: ${weather.tempC}°C
-- Condition: ${weather.condition}
-- Humidity: ${weather.humidity}%
-- Wind Speed: ${weather.windSpeedKmh} km/h
-`;
+  const userPrompt = `District: ${district.name}
+Best Season: ${district.bestSeason}
+Weather: ${weather.tempC}°C, ${weather.condition}, Humidity ${weather.humidity}%, Wind ${weather.windSpeedKmh} km/h`;
 
   return { systemPrompt, userPrompt };
 }

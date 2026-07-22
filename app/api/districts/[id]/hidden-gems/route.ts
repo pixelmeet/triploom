@@ -4,6 +4,7 @@ import dbConnect from '@/lib/db';
 import District from '@/models/District';
 import HiddenGem from '@/models/HiddenGem';
 import { buildHiddenGemsRankingPrompt } from '@/lib/prompts/hiddenGemsRanking';
+import { PROMPT_CONFIGS } from '@/lib/prompts/config';
 import { callGroq, GroqError } from '@/lib/groq';
 
 export const dynamic = 'force-dynamic';
@@ -60,7 +61,7 @@ export async function GET(
 
     let rawResult;
     try {
-      rawResult = await callGroq(systemPrompt, userPrompt);
+      rawResult = await callGroq(systemPrompt, userPrompt, PROMPT_CONFIGS.HIDDEN_GEMS_RANKING);
     } catch (error: any) {
       console.error('Groq call failed in hidden-gems ranking:', error);
       if (error instanceof GroqError) {

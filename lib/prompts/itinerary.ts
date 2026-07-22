@@ -1,3 +1,5 @@
+import { formatAttractions, formatHiddenGems, formatFood, serializeGrounding } from './helpers';
+
 interface ItineraryInput {
   days: number;
   budget: number;
@@ -20,86 +22,56 @@ interface GroundingData {
 }
 
 /**
- * Builds the system and user prompts for Groq itinerary generation.
+ * Builds system and user prompts for Groq itinerary generation.
  * Grounded strictly in the provided database items for the district.
  */
-export function buildItineraryPrompt(input: ItineraryInput, groundingData: GroundingData) {
-  const systemPrompt = `You are an expert travel assistant specializing in creating structured, personalized travel itineraries for Gujarat, India.
-Your task is to generate a day-by-day travel itinerary based on the user's inputs and the curated, real-world database of places provided.
+export function buildItineraryPrompt(input: ItineraryInput, rawGrounding: GroundingData) {
+  const groundingData = {
+    attractions: formatAttractions(rawGrounding.attractions),
+    hiddenGems: formatHiddenGems(rawGrounding.hiddenGems),
+    food: formatFood(rawGrounding.food),
+  };
+
+  const systemPrompt = `You are an expert travel assistant for Gujarat, India.
+Generate a day-by-day travel itinerary grounded strictly in the provided database of places.
 
 CRITICAL RULES:
-1. Grounding: You MUST ONLY use place names (attractions, hidden gems, restaurants, food places) that are explicitly provided in the user's grounding data. You must NEVER hallucinate or invent new places, restaurants, cafes, attractions, or hidden gems. If a place is not in the grounding data, it cannot be in the itinerary.
-2. Interests & Budget: Try to tailor the itinerary to the user's list of interests and align the total cost with the user's budget.
-3. Structure: The output must be valid JSON only. Output must strictly follow the JSON schema provided below.
+1. Grounding: Use ONLY place names from the provided grounding data. NEVER invent or hallucinate places, cafes, or attractions.
+2. Personalization & Budget: Tailor items to user interests and keep total cost near budget.
+3. Structure: Output valid JSON matching the schema below.
 
 JSON Schema:
 {
   "itinerary": [
     {
-      "day": number,
+      "day": 1,
       "district": "string",
       "items": [
         {
-          "time": "string",
+          "time": "09:00 AM",
           "name": "string",
           "type": "attraction | food | hidden_gem",
-          "estimatedCost": number,
+          "estimatedCost": 0,
           "notes": "string"
         }
       ],
-      "dailyEstimatedCost": number
+      "dailyEstimatedCost": 0
     }
   ],
-  "totalEstimatedCost": number
+  "totalEstimatedCost": 0
 }
 
-Example Output:
-{
-  "itinerary": [
-    {
-      "day": 1,
-      "district": "Ahmedabad",
-      "items": [
-        {
-          "time": "09:00 AM",
-          "name": "Sabarmati Ashram",
-          "type": "attraction",
-          "estimatedCost": 50,
-          "notes": "Start your trip at the peaceful home of Mahatma Gandhi. It aligns with your interest in history."
-        },
-        {
-          "time": "01:00 PM",
-          "name": "Gujarati Thali at Agashiye",
-          "type": "food",
-          "estimatedCost": 1200,
-          "notes": "Enjoy an authentic Gujarati thali for lunch, fitting your food interest."
-        },
-        {
-          "time": "04:30 PM",
-          "name": "Sarkhej Roza",
-          "type": "hidden_gem",
-          "estimatedCost": 0,
-          "notes": "Discover this beautiful water palace, a peaceful hidden gem with stunning architecture."
-        }
-      ],
-      "dailyEstimatedCost": 1250
-    }
-  ],
-  "totalEstimatedCost": 1250
-}
-`;
+Example:
+{"itinerary":[{"day":1,"district":"Ahmedabad","items":[{"time":"09:00 AM","name":"Sabarmati Ashram","type":"attraction","estimatedCost":50,"notes":"Visit Gandhi's ashram."},{"time":"01:00 PM","name":"Agashiye","type":"food","estimatedCost":1200,"notes":"Enjoy traditional thali."}],"dailyEstimatedCost":1250}],"totalEstimatedCost":1250}`;
 
-  const userPrompt = `Generate a travel itinerary with the following details:
-
-User Input:
+  const userPrompt = `Input:
 - Days: ${input.days}
 - Budget (INR): ${input.budget}
 - Interests: ${input.interests.join(', ')}
-- Starting District: ${input.startDistrict}
+- Start District: ${input.startDistrict}
 
-Grounding Data (You MUST ONLY select items from this list):
-${JSON.stringify(groundingData, null, 2)}
-`;
+Grounding Data (ONLY select items from this list):
+${serializeGrounding(groundingData)}`;
 
   return { systemPrompt, userPrompt };
 }
