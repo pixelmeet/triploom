@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import District from '@/models/District';
 import Attraction from '@/models/Attraction';
 import HiddenGem from '@/models/HiddenGem';
 import Food from '@/models/Food';
+import Itinerary from '@/models/Itinerary';
 import { buildItineraryPrompt } from '@/lib/prompts/itinerary';
 import { callGroq, GroqError } from '@/lib/groq';
 
@@ -35,6 +38,40 @@ function validateItinerary(data: any): boolean {
   }
 
   return true;
+}
+
+export async function GET(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
+    }
+
+    await dbConnect();
+    const itineraries = await Itinerary.find({ userId: session.user.id })
+      .select('_id title budget interests generatedAt status days')
+      .sort({ generatedAt: -1 })
+      .lean();
+
+    const summaries = itineraries.map((it: any) => ({
+      _id: it._id.toString(),
+      title: it.title,
+      budget: it.budget,
+      interests: it.interests,
+      generatedAt: it.generatedAt,
+      status: it.status,
+      daysCount: Array.isArray(it.days) ? it.days.length : 0,
+      startDistrict: Array.isArray(it.days) && it.days.length > 0 ? it.days[0].district : '',
+    }));
+
+    return NextResponse.json(summaries);
+  } catch (error: any) {
+    console.error('Unhandled route error in GET /api/itinerary:', error);
+    return NextResponse.json(
+      { error: 'An unexpected server error occurred.' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(req: Request) {
@@ -118,7 +155,7 @@ export async function POST(req: Request) {
     );
 
     // Call Groq AI
-    let rawResult;
+    let rawResult: any;
     try {
       rawResult = await callGroq(systemPrompt, userPrompt);
     } catch (error: any) {
@@ -150,7 +187,32 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json(rawResult);
+    // Persist itinerary if request is authenticated
+    const session = await getServerSession(authOptions);
+    let savedItineraryId: string | undefined = undefined;
+
+    if (session?.user?.id) {
+      try {
+        const title = `${district.name} ${days}-Day Trip`;
+        const newItinerary = await Itinerary.create({
+          userId: session.user.id,
+          title,
+          days: rawResult.itinerary,
+          budget,
+          interests: Array.isArray(interests) ? interests : [],
+          generatedAt: new Date(),
+          status: 'active',
+        });
+        savedItineraryId = newItinerary._id.toString();
+      } catch (saveError: any) {
+        console.error('Failed to save itinerary for authenticated user:', saveError?.message);
+      }
+    }
+
+    return NextResponse.json({
+      ...(rawResult as object),
+      ...(savedItineraryId ? { _id: savedItineraryId } : {}),
+    });
   } catch (error: any) {
     console.error('Unhandled route error in POST /api/itinerary:', error);
     return NextResponse.json(

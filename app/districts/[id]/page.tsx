@@ -332,30 +332,15 @@ export default function DistrictDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-teal-500 selection:text-slate-900 pb-20">
-      {/* Header */}
-      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/districts" className="flex items-center gap-2 group text-slate-400 hover:text-slate-200 transition-colors">
-            <ArrowLeft className="h-4 w-4 transform group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-semibold">Back to Districts</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/itinerary"
-              className="text-xs font-semibold px-4 py-2 rounded-xl bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white border border-slate-700 transition-all"
-            >
-              Itinerary Planner
-            </Link>
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-              Phase 3: Cached AI
-            </span>
-          </div>
-        </div>
-      </header>
+    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-20">
+      <div className="mb-6">
+        <Link href="/districts" className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-teal-400 transition-colors">
+          <ArrowLeft className="h-4 w-4" /> Back to Districts
+        </Link>
+      </div>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+      <main>
         {/* District Detail Hero Card */}
         <div className="relative bg-slate-950/40 border border-slate-800 rounded-3xl p-8 mb-10 overflow-hidden shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-teal-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
