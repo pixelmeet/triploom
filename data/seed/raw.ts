@@ -302,43 +302,43 @@ export const rawFestivals = [
   {
     name: "PLACEHOLDER FESTIVAL - AHMEDABAD (VERIFY)",
     districtName: "Ahmedabad",
-    startDate: new Date("2026-10-01T00:00:00Z"),
-    endDate: new Date("2026-10-05T23:59:59Z"),
+    startDate: new Date("2099-01-01T00:00:00Z"),
+    endDate: new Date("2099-01-05T23:59:59Z"),
     description: "PLACEHOLDER FESTIVAL DESCRIPTION - High crowds expected at major venues, expect heavy traffic and elevated accommodation rates."
   },
   {
     name: "PLACEHOLDER FESTIVAL - KUTCH (VERIFY)",
     districtName: "Kutch",
-    startDate: new Date("2026-11-01T00:00:00Z"),
-    endDate: new Date("2026-11-10T23:59:59Z"),
+    startDate: new Date("2099-01-01T00:00:00Z"),
+    endDate: new Date("2099-01-05T23:59:59Z"),
     description: "PLACEHOLDER FESTIVAL DESCRIPTION - Cultural showcase with night desert camps, high demand for tent bookings."
   },
   {
     name: "PLACEHOLDER FESTIVAL - JUNAGADH (VERIFY)",
     districtName: "Junagadh",
-    startDate: new Date("2026-02-15T00:00:00Z"),
-    endDate: new Date("2026-02-20T23:59:59Z"),
+    startDate: new Date("2099-01-01T00:00:00Z"),
+    endDate: new Date("2099-01-05T23:59:59Z"),
     description: "PLACEHOLDER FESTIVAL DESCRIPTION - Religious gathering near Girnar foothills, large pilgrim footfall."
   },
   {
     name: "PLACEHOLDER FESTIVAL - DWARKA (VERIFY)",
     districtName: "Dwarka",
-    startDate: new Date("2026-09-01T00:00:00Z"),
-    endDate: new Date("2026-09-05T23:59:59Z"),
+    startDate: new Date("2099-01-01T00:00:00Z"),
+    endDate: new Date("2099-01-05T23:59:59Z"),
     description: "PLACEHOLDER FESTIVAL DESCRIPTION - Temple celebrations, road closures around main town square."
   },
   {
     name: "PLACEHOLDER FESTIVAL - VADODARA (VERIFY)",
     districtName: "Vadodara",
-    startDate: new Date("2026-10-10T00:00:00Z"),
-    endDate: new Date("2026-10-15T23:59:59Z"),
+    startDate: new Date("2099-01-01T00:00:00Z"),
+    endDate: new Date("2099-01-05T23:59:59Z"),
     description: "PLACEHOLDER FESTIVAL DESCRIPTION - Evening cultural dance performances, evening traffic restrictions."
   },
   {
     name: "PLACEHOLDER FESTIVAL - NARMADA (VERIFY)",
     districtName: "Narmada (Kevadia)",
-    startDate: new Date("2026-12-01T00:00:00Z"),
-    endDate: new Date("2026-12-05T23:59:59Z"),
+    startDate: new Date("2099-01-01T00:00:00Z"),
+    endDate: new Date("2099-01-05T23:59:59Z"),
     description: "PLACEHOLDER FESTIVAL DESCRIPTION - Eco-tourism event near dam site, advance entry pass recommended."
   }
 ];
