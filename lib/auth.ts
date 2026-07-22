@@ -5,8 +5,10 @@ import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET || 'triploom_default_nextauth_secret_key_2026',
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
   },
@@ -19,7 +21,9 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.log('[Auth] Missing email or password in credentials');
+          if (isDev) {
+            console.log('[Auth] Missing email or password in credentials');
+          }
           return null;
         }
 
@@ -29,22 +33,30 @@ export const authOptions: NextAuthOptions = {
           const user = await User.findOne({ email: cleanEmail });
 
           if (!user) {
-            console.log(`[Auth] No user found for email: ${cleanEmail}`);
+            if (isDev) {
+              console.log(`[Auth] No user found for email: ${cleanEmail}`);
+            }
             return null;
           }
 
           if (!user.passwordHash) {
-            console.log(`[Auth] User ${cleanEmail} registered via OAuth (no passwordHash)`);
+            if (isDev) {
+              console.log(`[Auth] User ${cleanEmail} registered via OAuth (no passwordHash)`);
+            }
             return null;
           }
 
           const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
           if (!isValid) {
-            console.log(`[Auth] Invalid password for user: ${cleanEmail}`);
+            if (isDev) {
+              console.log(`[Auth] Invalid password for user: ${cleanEmail}`);
+            }
             return null;
           }
 
-          console.log(`[Auth] Successfully authenticated user: ${cleanEmail}`);
+          if (isDev) {
+            console.log(`[Auth] Successfully authenticated user: ${cleanEmail}`);
+          }
           return {
             id: user._id.toString(),
             name: user.name || user.email,
