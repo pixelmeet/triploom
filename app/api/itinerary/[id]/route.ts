@@ -91,3 +91,39 @@ export async function PATCH(
     return NextResponse.json({ error: 'An unexpected server error occurred.' }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
+    }
+
+    const { id } = await context.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Itinerary not found.' }, { status: 404 });
+    }
+
+    await dbConnect();
+    const itinerary = await Itinerary.findById(id);
+
+    if (!itinerary) {
+      return NextResponse.json({ error: 'Itinerary not found.' }, { status: 404 });
+    }
+
+    if (itinerary.userId.toString() !== session.user.id) {
+      return NextResponse.json({ error: 'Forbidden. You do not own this itinerary.' }, { status: 403 });
+    }
+
+    await Itinerary.findByIdAndDelete(id);
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error: any) {
+    console.error('Error in DELETE /api/itinerary/[id]:', error?.message);
+    return NextResponse.json({ error: 'An unexpected server error occurred.' }, { status: 500 });
+  }
+}
+

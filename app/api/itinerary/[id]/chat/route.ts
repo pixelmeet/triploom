@@ -11,8 +11,9 @@ import HiddenGem from '@/models/HiddenGem';
 import Food from '@/models/Food';
 import Itinerary from '@/models/Itinerary';
 import { buildChatAssistantPrompt, ChatMessage } from '@/lib/prompts/chatAssistant';
-import { PROMPT_CONFIGS } from '@/lib/prompts/config';
+import { PROMPT_CONFIGS, getChatMaxTokens } from '@/lib/prompts/config';
 import { callGroq, GroqError } from '@/lib/groq';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -141,8 +142,13 @@ export async function POST(
 
     let rawResult: any;
     try {
-      rawResult = await callGroq(systemPrompt, userPrompt, PROMPT_CONFIGS.CHAT_ASSISTANT);
+      const dayCount = Array.isArray(itinerary.days) ? itinerary.days.length : 1;
+      rawResult = await callGroq(systemPrompt, userPrompt, {
+        ...PROMPT_CONFIGS.CHAT_ASSISTANT,
+        max_tokens: getChatMaxTokens(dayCount),
+      });
     } catch (error: any) {
+
       console.error('Groq API error in chat route:', error);
       if (error instanceof GroqError) {
         if (error.reason === 'rate_limit') {

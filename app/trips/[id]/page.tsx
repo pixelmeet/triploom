@@ -19,9 +19,11 @@ import {
   Bot,
   User,
   CheckCircle2,
-  MessageSquare
+  MessageSquare,
+  Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
 
 interface ItineraryItem {
   time: string;
@@ -87,6 +89,8 @@ export default function TripDetailPage({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState('');
   const [savingTitle, setSavingTitle] = useState(false);
+  const [deletingTrip, setDeletingTrip] = useState(false);
+
 
   // Chat State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -156,6 +160,28 @@ export default function TripDetailPage({
       setSavingTitle(false);
     }
   };
+
+  const handleDeleteTrip = async () => {
+    if (!trip) return;
+    if (!window.confirm('Delete this trip? This cannot be undone.')) return;
+    setDeletingTrip(true);
+    try {
+      const res = await fetch(`/api/itinerary/${tripId}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to delete trip.');
+      }
+
+      router.push('/trips');
+    } catch (err: any) {
+      alert(err?.message || 'Failed to delete trip.');
+      setDeletingTrip(false);
+    }
+  };
+
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -297,7 +323,20 @@ export default function TripDetailPage({
                 >
                   <Edit3 className="h-4 w-4" />
                 </button>
+                <button
+                  onClick={handleDeleteTrip}
+                  disabled={deletingTrip}
+                  className="p-2 rounded-md text-iron-black/30 hover:text-madder-red hover:bg-madder-red/5 border border-transparent hover:border-madder-red/30 transition-all disabled:opacity-50"
+                  title="Delete trip"
+                >
+                  {deletingTrip ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-madder-red" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                </button>
               </div>
+
             )}
 
             <div className="flex flex-wrap items-center gap-3 text-xs text-iron-black/50 mt-3">

@@ -4,8 +4,9 @@ import dbConnect from '@/lib/db';
 import District from '@/models/District';
 import Food from '@/models/Food';
 import { buildFoodRecommendationPrompt } from '@/lib/prompts/foodRecommendations';
-import { PROMPT_CONFIGS } from '@/lib/prompts/config';
+import { PROMPT_CONFIGS, getFoodMaxTokens } from '@/lib/prompts/config';
 import { callGroq, GroqError } from '@/lib/groq';
+
 import { getCachedOrGenerate } from '@/lib/cache';
 
 export const dynamic = 'force-dynamic';
@@ -73,7 +74,11 @@ export async function GET(
           groundingFood
         );
 
-        const rawResult = await callGroq(systemPrompt, userPrompt, PROMPT_CONFIGS.FOOD_RECOMMENDATIONS);
+        const rawResult = await callGroq(systemPrompt, userPrompt, {
+          ...PROMPT_CONFIGS.FOOD_RECOMMENDATIONS,
+          max_tokens: getFoodMaxTokens(foodItems.length),
+        });
+
 
         if (
           !rawResult ||

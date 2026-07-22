@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Briefcase, Calendar, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { Briefcase, Calendar, ArrowRight, Loader2, AlertCircle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ItinerarySummary {
@@ -24,6 +24,8 @@ export default function MyTripsPage() {
   const [trips, setTrips] = useState<ItinerarySummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteErrors, setDeleteErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -50,6 +52,34 @@ export default function MyTripsPage() {
 
     fetchTrips();
   }, [status]);
+
+  const handleDeleteTrip = async (id: string) => {
+    if (!window.confirm('Delete this trip? This cannot be undone.')) return;
+
+    setDeletingId(id);
+    setDeleteErrors((prev) => ({ ...prev, [id]: '' }));
+
+    try {
+      const res = await fetch(`/api/itinerary/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to delete trip.');
+      }
+
+      setTrips((prev) => prev.filter((t) => t._id !== id));
+    } catch (err: any) {
+      setDeleteErrors((prev) => ({
+        ...prev,
+        [id]: err?.message || 'Failed to delete trip.',
+      }));
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
 
   if (status === 'loading' || (status === 'authenticated' && loading)) {
     return (
@@ -169,17 +199,39 @@ export default function MyTripsPage() {
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-desert-dust/40 flex items-center justify-between">
-                  <Link href={`/trips/${trip._id}`} className="w-full">
-                    <Button
-                      variant="outline"
-                      className="w-full flex items-center justify-between group-hover:border-indigo-deep/30 transition-colors rounded-md"
+                <div className="pt-4 border-t border-desert-dust/40 flex flex-col gap-2">
+                  {deleteErrors[trip._id] && (
+                    <p className="text-xs text-madder-red font-medium">
+                      {deleteErrors[trip._id]}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between gap-2">
+                    <Link href={`/trips/${trip._id}`} className="flex-1">
+                      <Button
+                        variant="outline"
+                        className="w-full flex items-center justify-between group-hover:border-indigo-deep/30 transition-colors rounded-md"
+                      >
+                        <span>View itinerary</span>
+                        <ArrowRight className="h-3.5 w-3.5 text-indigo-deep transform group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTrip(trip._id)}
+                      disabled={deletingId === trip._id}
+                      aria-label="Delete trip"
+                      title="Delete trip"
+                      className="p-2.5 rounded-md text-iron-black/40 hover:text-madder-red hover:bg-madder-red/5 border border-desert-dust hover:border-madder-red/30 transition-all disabled:opacity-50 shrink-0"
                     >
-                      <span>View itinerary</span>
-                      <ArrowRight className="h-3.5 w-3.5 text-indigo-deep transform group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </Link>
+                      {deletingId === trip._id ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-madder-red" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
+
               </div>
             );
           })}
