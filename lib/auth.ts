@@ -6,7 +6,7 @@ import dbConnect from '@/lib/db';
 import User from '@/models/User';
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || 'triploom_default_nextauth_secret_key_2026',
   session: {
     strategy: 'jwt',
   },
@@ -19,30 +19,40 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log('[Auth] Missing email or password in credentials');
           return null;
         }
 
         try {
           await dbConnect();
-          const user = await User.findOne({ email: credentials.email.toLowerCase() });
+          const cleanEmail = credentials.email.trim().toLowerCase();
+          const user = await User.findOne({ email: cleanEmail });
 
-          if (!user || !user.passwordHash) {
+          if (!user) {
+            console.log(`[Auth] No user found for email: ${cleanEmail}`);
+            return null;
+          }
+
+          if (!user.passwordHash) {
+            console.log(`[Auth] User ${cleanEmail} registered via OAuth (no passwordHash)`);
             return null;
           }
 
           const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
           if (!isValid) {
+            console.log(`[Auth] Invalid password for user: ${cleanEmail}`);
             return null;
           }
 
+          console.log(`[Auth] Successfully authenticated user: ${cleanEmail}`);
           return {
             id: user._id.toString(),
             name: user.name || user.email,
             email: user.email,
             image: user.image || null,
           };
-        } catch (error) {
-          console.error('Error during credentials authorization');
+        } catch (error: any) {
+          console.error('[Auth] Error during credentials authorization:', error?.message || error);
           return null;
         }
       },
@@ -57,18 +67,19 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === 'google') {
         try {
           await dbConnect();
-          let dbUser = await User.findOne({ email: user.email?.toLowerCase() });
+          const cleanEmail = user.email?.trim().toLowerCase();
+          let dbUser = await User.findOne({ email: cleanEmail });
           if (!dbUser) {
             dbUser = await User.create({
               name: user.name || '',
-              email: user.email?.toLowerCase(),
+              email: cleanEmail,
               image: user.image || '',
               provider: 'google',
             });
           }
           user.id = dbUser._id.toString();
-        } catch (error) {
-          console.error('Error in Google signIn callback');
+        } catch (error: any) {
+          console.error('[Auth] Error in Google signIn callback:', error?.message || error);
           return false;
         }
       }
