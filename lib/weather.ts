@@ -27,7 +27,7 @@ export async function getWeatherForDistrict(district: {
 }): Promise<WeatherData> {
   const apiKey = process.env.OPENWEATHER_API_KEY;
   if (!apiKey) {
-    throw new Error('Please define the OPENWEATHER_API_KEY environment variable inside .env');
+    throw new WeatherError('Please define the OPENWEATHER_API_KEY environment variable inside .env', 'unknown');
   }
 
   const isDev = process.env.NODE_ENV === 'development';
