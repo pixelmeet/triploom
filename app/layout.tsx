@@ -1,22 +1,33 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Source_Serif_4, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import { Navbar } from "@/components/Navbar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif-4",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "TripLoom — AI-Powered Gujarat Travel Companion",
-  description: "Personalized itineraries, district guides, and local recommendations across Gujarat.",
+  title: "TripLoom — Plan a Trip to Gujarat",
+  description:
+    "Itineraries built from verified places, costs, and travel times across Gujarat's districts.",
 };
 
 export default function RootLayout({
@@ -27,9 +38,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased bg-slate-900`}
+      className={`${archivo.variable} ${sourceSerif.variable} ${ibmPlexMono.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col bg-slate-900 text-slate-100 font-sans selection:bg-teal-500 selection:text-slate-900">
+      <body className="min-h-full flex flex-col">
         <AuthProvider>
           <Navbar />
           {children}

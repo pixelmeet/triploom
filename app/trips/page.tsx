@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Briefcase, Calendar, Coins, ArrowRight, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { Briefcase, Calendar, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ItinerarySummary {
@@ -37,7 +37,7 @@ export default function MyTripsPage() {
       try {
         const res = await fetch('/api/itinerary');
         if (!res.ok) {
-          throw new Error('Failed to fetch saved itineraries.');
+          throw new Error('Couldn\'t load saved itineraries — try again.');
         }
         const data = await res.json();
         setTrips(data);
@@ -54,56 +54,56 @@ export default function MyTripsPage() {
   if (status === 'loading' || (status === 'authenticated' && loading)) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-32 text-center">
-        <Loader2 className="h-12 w-12 text-teal-500 animate-spin mb-4" />
-        <p className="text-slate-400 font-medium">Loading your saved trips...</p>
+        <div className="jali-divider-indigo w-24 animate-jaliResolve mb-4" />
+        <p className="text-iron-black/50 font-medium">Loading your trips...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 animate-fadeSlideIn">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-desert-dust">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-teal-400 via-slate-100 to-amber-400 bg-clip-text text-transparent flex items-center gap-3">
-            <Briefcase className="h-8 w-8 text-teal-400" />
-            My Saved Trips
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-iron-black flex items-center gap-3">
+            <Briefcase className="h-7 w-7 text-indigo-deep" />
+            My Trips
           </h1>
-          <p className="text-slate-400 mt-2 text-sm sm:text-base">
-            Access and manage all your saved Gujarat travel itineraries.
+          <p className="text-iron-black/50 mt-2 text-sm">
+            Your saved itineraries.
           </p>
         </div>
 
         <Link href="/itinerary">
-          <Button className="bg-gradient-to-r from-teal-500 to-emerald-500 text-slate-950 font-bold hover:from-teal-400 hover:to-emerald-400 rounded-xl flex items-center gap-2 shadow-lg shadow-teal-500/10 border-none">
-            <Sparkles className="h-4 w-4" />
-            Create New Trip
+          <Button className="bg-indigo-deep text-resist-white font-bold hover:bg-indigo-hover rounded-md flex items-center gap-2 border-none">
+            <Calendar className="h-4 w-4" />
+            Generate Itinerary
           </Button>
         </Link>
       </div>
 
       {error && (
-        <div className="border border-red-950/50 bg-red-950/20 text-red-300 p-6 rounded-2xl flex items-start gap-4 mb-8">
-          <AlertCircle className="h-6 w-6 text-red-500 shrink-0 mt-0.5" />
+        <div className="border border-madder-red/30 bg-madder-red/5 text-madder-red p-5 rounded-lg flex items-start gap-3 mb-8">
+          <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
           <div>
-            <h3 className="text-lg font-bold text-red-400">Error Loading Trips</h3>
-            <p className="text-slate-300 mt-1 text-sm">{error}</p>
+            <h3 className="text-base font-bold">Couldn&apos;t load trips</h3>
+            <p className="text-iron-black/60 mt-1 text-sm">{error}</p>
           </div>
         </div>
       )}
 
       {!loading && !error && trips.length === 0 && (
-        <div className="border border-dashed border-slate-800 rounded-2xl py-24 px-6 text-center bg-slate-950/30 backdrop-blur-sm">
-          <div className="mx-auto h-14 w-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4 text-slate-500">
-            <Briefcase className="h-7 w-7 text-teal-500/50" />
+        <div className="border border-dashed border-desert-dust rounded-lg py-20 px-6 text-center bg-white">
+          <div className="mx-auto h-12 w-12 rounded-md bg-dust-lighter border border-desert-dust flex items-center justify-center mb-4 text-iron-black/30">
+            <Briefcase className="h-6 w-6" />
           </div>
-          <h3 className="text-xl font-bold text-slate-200">No Saved Trips Found</h3>
-          <p className="text-slate-400 max-w-md mx-auto mt-2 text-sm">
-            You haven&apos;t saved any travel itineraries yet. Use our AI generator to craft your first custom trip.
+          <h3 className="text-lg font-bold text-iron-black/70">No trips saved yet</h3>
+          <p className="text-iron-black/40 max-w-md mx-auto mt-2 text-sm">
+            Generate an itinerary to save your first trip.
           </p>
-          <div className="mt-6">
+          <div className="mt-5">
             <Link href="/itinerary">
-              <Button className="bg-teal-500 text-slate-950 font-bold hover:bg-teal-400 rounded-xl px-6">
+              <Button className="bg-indigo-deep text-resist-white font-bold hover:bg-indigo-hover rounded-md px-5">
                 Generate Itinerary
               </Button>
             </Link>
@@ -112,7 +112,7 @@ export default function MyTripsPage() {
       )}
 
       {!loading && !error && trips.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {trips.map((trip) => {
             const formattedDate = new Date(trip.generatedAt).toLocaleDateString('en-IN', {
               day: 'numeric',
@@ -123,45 +123,45 @@ export default function MyTripsPage() {
             return (
               <div
                 key={trip._id}
-                className="group relative bg-slate-950/60 border border-slate-800/90 hover:border-teal-500/50 rounded-2xl p-6 transition-all duration-300 shadow-xl flex flex-col justify-between"
+                className="group border border-desert-dust hover:border-indigo-deep/40 rounded-lg p-5 transition-colors duration-150 bg-white flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-900 text-slate-400 border border-slate-800">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-sm bg-dust-lighter text-iron-black/50 border border-desert-dust/60 font-data">
                       {formattedDate}
                     </span>
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/20">
-                      {trip.daysCount} Days
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-sm bg-indigo-deep/10 text-indigo-deep border border-indigo-deep/15 font-data">
+                      {trip.daysCount} days
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-slate-100 group-hover:text-teal-300 transition-colors line-clamp-1 mb-3">
+                  <h3 className="text-lg font-bold text-iron-black group-hover:text-indigo-deep transition-colors line-clamp-1 mb-3" style={{ fontFamily: 'var(--font-display)' }}>
                     {trip.title}
                   </h3>
 
-                  <div className="space-y-2 text-sm text-slate-400 mb-4">
+                  <div className="space-y-1.5 text-sm text-iron-black/50 mb-4">
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-1.5 text-slate-400">
-                        <Coins className="h-4 w-4 text-amber-400" /> Budget Limit:
+                      <span className="flex items-center gap-1.5">
+                        Budget:
                       </span>
-                      <strong className="text-amber-400 font-bold">
+                      <strong className="text-indigo-deep font-bold font-data">
                         ₹{trip.budget.toLocaleString('en-IN')}
                       </strong>
                     </div>
                   </div>
 
                   {trip.interests && trip.interests.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-6">
+                    <div className="flex flex-wrap gap-1.5 mb-5">
                       {trip.interests.slice(0, 3).map((interest, idx) => (
                         <span
                           key={idx}
-                          className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-900 text-slate-400 border border-slate-800 capitalize"
+                          className="text-[11px] font-medium px-2 py-0.5 rounded-sm bg-dust-lighter text-iron-black/50 border border-desert-dust/60 capitalize"
                         >
                           {interest}
                         </span>
                       ))}
                       {trip.interests.length > 3 && (
-                        <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-md bg-slate-900 text-slate-500">
+                        <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-sm bg-dust-lighter text-iron-black/40">
                           +{trip.interests.length - 3} more
                         </span>
                       )}
@@ -169,14 +169,14 @@ export default function MyTripsPage() {
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-slate-900 flex items-center justify-between">
+                <div className="pt-4 border-t border-desert-dust/40 flex items-center justify-between">
                   <Link href={`/trips/${trip._id}`} className="w-full">
                     <Button
                       variant="outline"
-                      className="w-full border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-white flex items-center justify-between group-hover:border-teal-500/30 transition-all rounded-xl"
+                      className="w-full flex items-center justify-between group-hover:border-indigo-deep/30 transition-colors rounded-md"
                     >
-                      <span>View Full Itinerary</span>
-                      <ArrowRight className="h-4 w-4 text-teal-400 transform group-hover:translate-x-1 transition-transform" />
+                      <span>View itinerary</span>
+                      <ArrowRight className="h-3.5 w-3.5 text-indigo-deep transform group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
                 </div>

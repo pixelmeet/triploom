@@ -5,13 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { 
-  Sparkles, 
   MapPin, 
   Utensils, 
   Gem, 
   Loader2, 
   AlertCircle, 
-  Coins, 
   Edit3, 
   Check, 
   X, 
@@ -55,6 +53,18 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   isEdit?: boolean;
+}
+
+function TypeIcon({ type }: { type: string }) {
+  if (type === 'food') return <Utensils className="h-4 w-4" />;
+  if (type === 'hidden_gem') return <Gem className="h-4 w-4" />;
+  return <MapPin className="h-4 w-4" />;
+}
+
+function typeBadgeColor(type: string): string {
+  if (type === 'food') return 'text-madder-red border-madder-red/20 bg-madder-red/5';
+  if (type === 'hidden_gem') return 'text-indigo-deep border-indigo-deep/20 bg-indigo-deep/5';
+  return 'text-indigo-deep border-indigo-deep/20 bg-indigo-deep/5';
 }
 
 export default function TripDetailPage({
@@ -195,7 +205,7 @@ export default function TripDetailPage({
         setTimeout(() => setUpdateNotice(null), 6000);
       }
     } catch (err: any) {
-      setChatError(err?.message || 'Failed to process request.');
+      setChatError(err?.message || 'Couldn\'t process that request — try again.');
     } finally {
       setIsSending(false);
     }
@@ -204,8 +214,8 @@ export default function TripDetailPage({
   if (sessionStatus === 'loading' || (sessionStatus === 'authenticated' && loading)) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-32 text-center">
-        <Loader2 className="h-12 w-12 text-teal-500 animate-spin mb-4" />
-        <p className="text-slate-400 font-medium">Loading itinerary details...</p>
+        <div className="jali-divider-indigo w-24 animate-jaliResolve mb-4" />
+        <p className="text-iron-black/50 font-medium">Loading itinerary...</p>
       </div>
     );
   }
@@ -213,14 +223,14 @@ export default function TripDetailPage({
   if (error || statusCode === 403 || statusCode === 404) {
     return (
       <div className="flex-1 max-w-3xl mx-auto px-4 py-20 text-center">
-        <div className="border border-red-950/50 bg-red-950/20 text-red-300 p-8 rounded-2xl">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-red-400 mb-2">
-            {statusCode === 403 ? 'Access Forbidden' : statusCode === 404 ? 'Trip Not Found' : 'Error'}
+        <div className="border border-madder-red/30 bg-madder-red/5 text-madder-red p-8 rounded-lg">
+          <AlertCircle className="h-10 w-10 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">
+            {statusCode === 403 ? 'Access denied' : statusCode === 404 ? 'Trip not found' : 'Error'}
           </h2>
-          <p className="text-slate-300 mb-6">{error}</p>
+          <p className="text-iron-black/60 mb-6 text-sm">{error}</p>
           <Link href="/trips">
-            <Button variant="outline" className="border-slate-800 bg-slate-900 text-slate-200">
+            <Button variant="outline" className="rounded-md">
               <ArrowLeft className="h-4 w-4 mr-2" /> Back to My Trips
             </Button>
           </Link>
@@ -234,16 +244,16 @@ export default function TripDetailPage({
   const totalCost = trip.days.reduce((acc, day) => acc + (day.dailyEstimatedCost || 0), 0);
 
   return (
-    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
-      {/* Navigation breadcrumb */}
+    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 animate-fadeSlideIn">
+      {/* Navigation */}
       <div className="mb-6">
-        <Link href="/trips" className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-teal-400 transition-colors">
+        <Link href="/trips" className="inline-flex items-center gap-2 text-sm font-medium text-iron-black/50 hover:text-indigo-deep transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back to My Trips
         </Link>
       </div>
 
-      {/* Trip Header / Title Edit */}
-      <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-6 sm:p-8 backdrop-blur-md mb-8 shadow-xl">
+      {/* Trip Header */}
+      <div className="border border-desert-dust rounded-lg p-5 sm:p-7 bg-white mb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex-1">
             {isEditingTitle ? (
@@ -252,14 +262,14 @@ export default function TripDetailPage({
                   type="text"
                   value={titleInput}
                   onChange={(e) => setTitleInput(e.target.value)}
-                  className="bg-slate-900 border border-teal-500 rounded-xl px-4 py-2 text-xl font-bold text-slate-100 focus:outline-none w-full"
+                  className="bg-white border border-indigo-deep rounded-md px-4 py-2 text-xl font-bold text-iron-black focus:outline-none w-full"
                   autoFocus
                 />
                 <Button
                   size="sm"
                   onClick={handleSaveTitle}
                   disabled={savingTitle}
-                  className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl"
+                  className="bg-indigo-deep hover:bg-indigo-hover text-resist-white font-bold rounded-md"
                 >
                   {savingTitle ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                 </Button>
@@ -270,168 +280,153 @@ export default function TripDetailPage({
                     setIsEditingTitle(false);
                     setTitleInput(trip.title);
                   }}
-                  className="border-slate-800 bg-slate-900 text-slate-400 hover:text-white rounded-xl"
+                  className="rounded-md"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-teal-400 via-slate-100 to-amber-400 bg-clip-text text-transparent">
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-iron-black">
                   {trip.title}
                 </h1>
                 <button
                   onClick={() => setIsEditingTitle(true)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-teal-400 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition-all"
+                  className="p-2 rounded-md text-iron-black/30 hover:text-indigo-deep hover:bg-dust-lighter border border-transparent hover:border-desert-dust transition-all"
                   title="Edit title"
                 >
-                  <Edit3 className="h-5 w-5" />
+                  <Edit3 className="h-4 w-4" />
                 </button>
               </div>
             )}
 
-            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-3">
-              <span className="flex items-center gap-1.5 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">
-                <Calendar className="h-3.5 w-3.5 text-teal-400" />
-                Created {new Date(trip.generatedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+            <div className="flex flex-wrap items-center gap-3 text-xs text-iron-black/50 mt-3">
+              <span className="flex items-center gap-1.5 bg-dust-lighter px-2.5 py-1 rounded-sm border border-desert-dust/60 font-data">
+                <Calendar className="h-3.5 w-3.5 text-indigo-deep/60" />
+                {new Date(trip.generatedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
               </span>
-              <span className="flex items-center gap-1.5 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">
-                <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                {trip.days.length} Days Duration
+              <span className="flex items-center gap-1.5 bg-dust-lighter px-2.5 py-1 rounded-sm border border-desert-dust/60 font-data">
+                {trip.days.length} days
               </span>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-900/80 border border-slate-800 rounded-xl p-4 shrink-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-dust-lighter border border-desert-dust/60 rounded-md p-4 shrink-0">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 text-amber-400">
-                <Coins className="h-5 w-5" />
+              <div className="h-9 w-9 rounded-md bg-indigo-deep/10 flex items-center justify-center border border-indigo-deep/15 text-indigo-deep">
+                <MapPin className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-xs text-slate-400 font-semibold block">Total Estimated Cost</span>
-                <span className="text-2xl font-extrabold text-amber-400">
+                <span className="text-xs text-iron-black/50 font-medium block">Estimated cost</span>
+                <span className="text-xl font-extrabold text-indigo-deep font-data">
                   ₹{totalCost.toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
-            <div className="border-t sm:border-t-0 sm:border-l border-slate-800 pt-2 sm:pt-0 sm:pl-4 text-xs text-slate-400">
-              <div>Budget Limit: <strong className="text-slate-200">₹{trip.budget.toLocaleString('en-IN')}</strong></div>
+            <div className="border-t sm:border-t-0 sm:border-l border-desert-dust pt-2 sm:pt-0 sm:pl-4 text-xs text-iron-black/50 font-data">
+              <div>Budget: <strong className="text-iron-black/70">₹{trip.budget.toLocaleString('en-IN')}</strong></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Grid: Itinerary Days (Left) + AI Chat Panel (Right) */}
+      {/* Main Content: Itinerary + Chat */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* Left 2-Columns: Day by Day Cards Display */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Left: Day Cards */}
+        <div className="lg:col-span-2 space-y-5">
           {trip.days.map((dayPlan) => (
-            <div key={dayPlan.day} className="bg-slate-950/40 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+            <div key={dayPlan.day} className="border border-desert-dust rounded-lg overflow-hidden bg-white">
               {/* Day Header */}
-              <div className="bg-slate-950/80 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+              <div className="bg-dust-lighter px-5 py-3 border-b border-desert-dust/60 flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <span className="h-7 w-7 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center text-sm font-bold border border-teal-500/20">
+                  <span className="h-6 w-6 rounded-sm bg-indigo-deep text-resist-white flex items-center justify-center text-xs font-bold">
                     {dayPlan.day}
                   </span>
-                  <h3 className="text-lg font-bold text-slate-100">
+                  <h3 className="text-sm font-bold text-iron-black">
                     Day {dayPlan.day} — {dayPlan.district}
                   </h3>
                 </div>
-                <span className="text-sm font-semibold text-slate-400">
-                  Day Cost: <strong className="text-amber-400">₹{dayPlan.dailyEstimatedCost}</strong>
+                <span className="text-xs font-medium text-iron-black/50 font-data">
+                  ₹{dayPlan.dailyEstimatedCost}
                 </span>
               </div>
 
-              {/* Items List */}
-              <div className="p-6 space-y-6">
-                {dayPlan.items.map((item, idx) => {
-                  let Icon = MapPin;
-                  let typeBadgeColor = 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-                  if (item.type === 'food') {
-                    Icon = Utensils;
-                    typeBadgeColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-                  } else if (item.type === 'hidden_gem') {
-                    Icon = Gem;
-                    typeBadgeColor = 'bg-purple-500/10 text-purple-400 border-purple-500/20';
-                  }
+              {/* Items */}
+              <div className="p-5 space-y-4">
+                {dayPlan.items.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    className="relative flex gap-3 pb-4 last:pb-0 last:border-none border-b border-desert-dust/30"
+                  >
+                    {idx < dayPlan.items.length - 1 && (
+                      <div className="absolute top-7 left-3.5 bottom-0 w-px bg-desert-dust/40 -translate-x-1/2" />
+                    )}
 
-                  return (
-                    <div 
-                      key={idx} 
-                      className="relative flex gap-4 pb-6 last:pb-0 last:border-none border-b border-slate-800/50"
-                    >
-                      {idx < dayPlan.items.length - 1 && (
-                        <div className="absolute top-8 left-4 bottom-0 w-0.5 bg-slate-800/80 -translate-x-1/2" />
-                      )}
+                    <div className={`h-7 w-7 rounded-sm flex items-center justify-center shrink-0 mt-0.5 ${typeBadgeColor(item.type)}`}>
+                      <TypeIcon type={item.type} />
+                    </div>
 
-                      <div className="h-8 w-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 text-slate-400 mt-0.5">
-                        <Icon className="h-4 w-4" />
-                      </div>
-
-                      <div className="flex-1 space-y-1.5">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded border border-slate-800/80">
-                              {item.time}
-                            </span>
-                            <h4 className="font-bold text-slate-200 text-base">
-                              {item.name}
-                            </h4>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider ${typeBadgeColor}`}>
-                              {item.type.replace('_', ' ')}
-                            </span>
-                          </div>
-                          <span className="text-sm font-semibold text-amber-500 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
-                            ₹{item.estimatedCost}
+                    <div className="flex-1 space-y-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs font-bold text-iron-black/40 font-data">
+                            {item.time}
+                          </span>
+                          <h4 className="font-bold text-iron-black text-sm">
+                            {item.name}
+                          </h4>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-sm border uppercase tracking-wider ${typeBadgeColor(item.type)}`}>
+                            {item.type.replace('_', ' ')}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-400 leading-relaxed">
-                          {item.notes}
-                        </p>
+                        <span className="text-xs font-medium text-indigo-deep font-data">
+                          ₹{item.estimatedCost}
+                        </span>
                       </div>
+                      <p className="text-sm text-iron-black/60 leading-relaxed">
+                        {item.notes}
+                      </p>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Right 1-Column: AI Chat Assistant Panel */}
-        <div className="lg:col-span-1 lg:sticky lg:top-24">
-          <div className="bg-slate-950/70 border border-slate-800 rounded-2xl flex flex-col h-[620px] shadow-2xl overflow-hidden backdrop-blur-md">
+        {/* Right: Chat Panel — Night Indigo */}
+        <div className="lg:col-span-1 lg:sticky lg:top-20">
+          <div className="bg-night-band border border-night-indigo/30 rounded-lg flex flex-col h-[600px] overflow-hidden">
             {/* Panel Header */}
-            <div className="bg-slate-950 px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+            <div className="px-4 py-3 border-b border-resist-white/10 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
-                  <Sparkles className="h-5 w-5" />
+                <div className="h-8 w-8 rounded-md bg-indigo-deep flex items-center justify-center text-resist-white">
+                  <MessageSquare className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-100 text-sm flex items-center gap-2">
-                    AI Travel Assistant
-                  </h3>
-                  <p className="text-[11px] text-slate-400">Ask for advice or itinerary edits</p>
+                  <h3 className="font-bold text-resist-white text-sm">Trip Assistant</h3>
+                  <p className="text-[11px] text-resist-white/50">Ask questions or request changes</p>
                 </div>
               </div>
               {updateNotice && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-teal-500/10 border border-teal-500/30 text-teal-400 px-2.5 py-1 rounded-full animate-fade-in">
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-indigo-deep/40 border border-indigo-deep/60 text-resist-white/90 px-2 py-0.5 rounded-sm">
                   <CheckCircle2 className="h-3 w-3" />
                   {updateNotice}
                 </span>
               )}
             </div>
 
-            {/* Messages Thread */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-3 text-xs">
               {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center px-4 py-8 text-slate-400 space-y-3">
-                  <div className="h-12 w-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-teal-400">
-                    <MessageSquare className="h-6 w-6" />
+                <div className="h-full flex flex-col items-center justify-center text-center px-4 py-8 text-resist-white/50 space-y-3">
+                  <div className="h-10 w-10 rounded-md bg-night-indigo border border-resist-white/10 flex items-center justify-center text-resist-white/40">
+                    <MessageSquare className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="font-semibold text-slate-200 text-sm">How can I refine your trip?</p>
-                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                      You can ask questions or request real itinerary changes like:
+                    <p className="font-semibold text-resist-white/80 text-sm">How can I help with this trip?</p>
+                    <p className="text-xs text-resist-white/40 mt-1 leading-relaxed">
+                      Ask questions or request changes:
                     </p>
                   </div>
                   <div className="w-full space-y-1.5 pt-2 text-left">
@@ -445,9 +440,9 @@ export default function TripDetailPage({
                         onClick={() => {
                           setChatInput(suggestion);
                         }}
-                        className="w-full text-left bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 hover:border-teal-500/40 rounded-xl px-3 py-2 text-[11px] text-slate-300 transition-colors"
+                        className="w-full text-left bg-night-indigo/60 hover:bg-night-indigo border border-resist-white/10 hover:border-indigo-deep/40 rounded-md px-3 py-2 text-[11px] text-resist-white/60 hover:text-resist-white/80 transition-colors cursor-pointer"
                       >
-                        💡 &quot;{suggestion}&quot;
+                        &ldquo;{suggestion}&rdquo;
                       </button>
                     ))}
                   </div>
@@ -456,34 +451,34 @@ export default function TripDetailPage({
                 messages.map((msg, index) => (
                   <div
                     key={index}
-                    className={`flex items-start gap-2.5 ${
+                    className={`flex items-start gap-2 ${
                       msg.role === 'user' ? 'justify-end' : 'justify-start'
                     }`}
                   >
                     {msg.role === 'assistant' && (
-                      <div className="h-7 w-7 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 shrink-0 mt-0.5">
-                        <Bot className="h-4 w-4" />
+                      <div className="h-6 w-6 rounded-sm bg-indigo-deep flex items-center justify-center text-resist-white shrink-0 mt-0.5">
+                        <Bot className="h-3.5 w-3.5" />
                       </div>
                     )}
 
                     <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-2.5 space-y-1.5 ${
+                      className={`max-w-[85%] rounded-md px-3 py-2 space-y-1 ${
                         msg.role === 'user'
-                          ? 'bg-teal-500 text-slate-950 font-medium rounded-tr-none'
-                          : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none'
+                          ? 'bg-indigo-deep text-resist-white font-medium rounded-tr-none'
+                          : 'bg-night-indigo border border-resist-white/10 text-resist-white/80 rounded-tl-none'
                       }`}
                     >
                       <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                       {msg.isEdit && (
-                        <div className="inline-flex items-center gap-1 text-[10px] font-bold text-teal-300 bg-teal-950/60 border border-teal-500/30 px-2 py-0.5 rounded-md">
-                          <CheckCircle2 className="h-3 w-3" /> Itinerary Updated
+                        <div className="inline-flex items-center gap-1 text-[10px] font-bold text-resist-white/70 bg-indigo-deep/30 border border-indigo-deep/40 px-2 py-0.5 rounded-sm">
+                          <CheckCircle2 className="h-3 w-3" /> Itinerary updated
                         </div>
                       )}
                     </div>
 
                     {msg.role === 'user' && (
-                      <div className="h-7 w-7 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 shrink-0 mt-0.5">
-                        <User className="h-4 w-4" />
+                      <div className="h-6 w-6 rounded-sm bg-night-indigo border border-resist-white/10 flex items-center justify-center text-resist-white/60 shrink-0 mt-0.5">
+                        <User className="h-3.5 w-3.5" />
                       </div>
                     )}
                   </div>
@@ -491,20 +486,20 @@ export default function TripDetailPage({
               )}
 
               {isSending && (
-                <div className="flex items-center gap-2.5 justify-start">
-                  <div className="h-7 w-7 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 shrink-0">
-                    <Bot className="h-4 w-4" />
+                <div className="flex items-center gap-2 justify-start">
+                  <div className="h-6 w-6 rounded-sm bg-indigo-deep flex items-center justify-center text-resist-white shrink-0">
+                    <Bot className="h-3.5 w-3.5" />
                   </div>
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-none px-4 py-2.5 text-slate-400 flex items-center gap-2">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin text-teal-400" />
-                    <span>Analyzing itinerary & updating...</span>
+                  <div className="bg-night-indigo border border-resist-white/10 rounded-md rounded-tl-none px-3 py-2 text-resist-white/50 flex items-center gap-2">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span>Updating itinerary...</span>
                   </div>
                 </div>
               )}
 
               {chatError && (
-                <div className="bg-red-950/30 border border-red-900/50 rounded-xl p-3 text-red-400 text-xs flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
+                <div className="bg-madder-red/20 border border-madder-red/30 rounded-md p-2 text-madder-light text-xs flex items-center gap-2">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                   <span>{chatError}</span>
                 </div>
               )}
@@ -513,22 +508,22 @@ export default function TripDetailPage({
             </div>
 
             {/* Input Form */}
-            <form onSubmit={handleSendMessage} className="p-3 bg-slate-950 border-t border-slate-800 flex gap-2">
+            <form onSubmit={handleSendMessage} className="p-3 border-t border-resist-white/10 flex gap-2">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ask assistant or request edits..."
+                placeholder="Ask or request changes..."
                 disabled={isSending}
-                className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-teal-500/50 disabled:opacity-50"
+                className="flex-1 bg-night-indigo border border-resist-white/10 rounded-md px-3 py-2 text-xs text-resist-white placeholder:text-resist-white/30 focus:outline-none focus:border-indigo-deep/50 disabled:opacity-50"
               />
               <Button
                 type="submit"
                 size="sm"
                 disabled={isSending || !chatInput.trim()}
-                className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl shrink-0 px-3 disabled:opacity-50"
+                className="bg-indigo-deep hover:bg-indigo-light text-resist-white font-bold rounded-md shrink-0 px-3 disabled:opacity-50"
               >
-                {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                {isSending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
               </Button>
             </form>
           </div>

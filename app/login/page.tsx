@@ -4,7 +4,7 @@ import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { Sparkles, Loader2, AlertCircle, LogIn } from 'lucide-react';
+import { Loader2, AlertCircle, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 function LoginForm() {
@@ -32,13 +32,13 @@ function LoginForm() {
       });
 
       if (res?.error) {
-        setError('Invalid credentials. Please check your email and password.');
+        setError('Invalid credentials — check your email and password.');
       } else if (res?.ok) {
         router.push(callbackUrl);
         router.refresh();
       }
     } catch (err: any) {
-      setError('An unexpected error occurred. Please try again.');
+      setError('An unexpected error occurred. Try again.');
     } finally {
       setLoading(false);
     }
@@ -56,30 +56,35 @@ function LoginForm() {
   };
 
   return (
-    <div className="max-w-md w-full space-y-8 bg-slate-950/60 border border-slate-800 p-8 rounded-2xl backdrop-blur-xl shadow-2xl relative z-10">
+    <div className="max-w-md w-full space-y-6 border border-desert-dust bg-white p-8 rounded-lg relative z-10">
       <div className="text-center">
-        <div className="mx-auto h-12 w-12 rounded-2xl bg-gradient-to-tr from-teal-500 to-amber-500 flex items-center justify-center shadow-lg shadow-teal-500/20 mb-4">
-          <Sparkles className="h-6 w-6 text-slate-950" />
+        {/* Loom mark */}
+        <div className="mx-auto h-11 w-11 rounded-md bg-indigo-deep flex items-center justify-center mb-4">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-resist-white">
+            <path d="M1 9L5 5L9 9L5 13Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+            <path d="M9 9L13 5L17 9L13 13Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+            <circle cx="9" cy="9" r="1.5" fill="currentColor" opacity="0.6"/>
+          </svg>
         </div>
-        <h2 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-          Welcome Back
+        <h2 className="text-2xl font-extrabold tracking-tight text-iron-black">
+          Sign in
         </h2>
-        <p className="mt-2 text-sm text-slate-400">
-          Sign in to access your saved itineraries and trip details.
+        <p className="mt-2 text-sm text-iron-black/50">
+          Sign in to view your saved trips.
         </p>
       </div>
 
       {error && (
-        <div className="border border-red-950/50 bg-red-950/20 text-red-300 p-4 rounded-xl flex items-start gap-3 text-sm">
-          <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+        <div className="border border-madder-red/30 bg-madder-red/5 text-madder-red p-3 rounded-md flex items-start gap-3 text-sm">
+          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
       )}
 
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-        <div className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <div className="space-y-3">
           <div>
-            <label htmlFor="login-email" className="block text-sm font-semibold text-slate-300 mb-1">
+            <label htmlFor="login-email" className="block text-sm font-semibold text-iron-black/70 mb-1">
               Email address
             </label>
             <input
@@ -91,12 +96,12 @@ function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
+              className="w-full bg-white border border-desert-dust rounded-md px-4 py-2.5 text-iron-black placeholder-iron-black/30 focus:outline-none focus:border-indigo-deep transition-colors text-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="login-password" className="block text-sm font-semibold text-slate-300 mb-1">
+            <label htmlFor="login-password" className="block text-sm font-semibold text-iron-black/70 mb-1">
               Password
             </label>
             <input
@@ -108,7 +113,7 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
+              className="w-full bg-white border border-desert-dust rounded-md px-4 py-2.5 text-iron-black placeholder-iron-black/30 focus:outline-none focus:border-indigo-deep transition-colors text-sm"
             />
           </div>
         </div>
@@ -117,28 +122,28 @@ function LoginForm() {
           id="login-submit-btn"
           type="submit"
           disabled={loading}
-          className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-slate-950 font-bold hover:from-teal-400 hover:to-emerald-400 py-6 rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-teal-500/10 border-none"
+          className="w-full bg-indigo-deep text-resist-white font-bold hover:bg-indigo-hover py-5 rounded-md flex items-center justify-center gap-2 cursor-pointer border-none"
         >
           {loading ? (
             <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              Signing In...
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Signing in...
             </>
           ) : (
             <>
-              <LogIn className="h-5 w-5" />
+              <LogIn className="h-4 w-4" />
               Sign In
             </>
           )}
         </Button>
       </form>
 
-      <div className="relative my-6">
+      <div className="relative my-4">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-800" />
+          <div className="w-full border-t border-desert-dust" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-slate-950 px-3 text-slate-500 font-semibold">Or continue with</span>
+          <span className="bg-white px-3 text-iron-black/40 font-medium">Or continue with</span>
         </div>
       </div>
 
@@ -148,12 +153,12 @@ function LoginForm() {
         variant="outline"
         disabled={googleLoading}
         onClick={handleGoogleSignIn}
-        className="w-full border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-800 py-6 rounded-xl flex items-center justify-center gap-3"
+        className="w-full py-5 rounded-md flex items-center justify-center gap-3"
       >
         {googleLoading ? (
-          <Loader2 className="h-5 w-5 animate-spin text-teal-400" />
+          <Loader2 className="h-4 w-4 animate-spin text-indigo-deep" />
         ) : (
-          <svg className="h-5 w-5" viewBox="0 0 24 24">
+          <svg className="h-4 w-4" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -172,12 +177,12 @@ function LoginForm() {
             />
           </svg>
         )}
-        <span>Sign in with Google</span>
+        <span className="text-sm">Sign in with Google</span>
       </Button>
 
-      <p className="text-center text-sm text-slate-400 mt-6">
+      <p className="text-center text-sm text-iron-black/50 mt-4">
         Don&apos;t have an account?{' '}
-        <Link href="/register" className="font-semibold text-teal-400 hover:underline">
+        <Link href="/register" className="font-semibold text-indigo-deep hover:underline">
           Register here
         </Link>
       </p>
@@ -187,13 +192,12 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 animate-fadeSlideIn">
       <Suspense
         fallback={
-          <div className="max-w-md w-full p-8 flex flex-col items-center justify-center bg-slate-950/60 border border-slate-800 rounded-2xl">
-            <Loader2 className="h-8 w-8 text-teal-500 animate-spin mb-2" />
-            <span className="text-slate-400 text-sm">Loading login...</span>
+          <div className="max-w-md w-full p-8 flex flex-col items-center justify-center border border-desert-dust bg-white rounded-lg">
+            <Loader2 className="h-6 w-6 text-indigo-deep animate-spin mb-2" />
+            <span className="text-iron-black/50 text-sm">Loading...</span>
           </div>
         }
       >

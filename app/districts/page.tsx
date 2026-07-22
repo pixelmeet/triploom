@@ -35,67 +35,64 @@ export default function DistrictsPage() {
   }, []);
 
   return (
-    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-10 pb-20">
+    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-10 pb-20 animate-fadeSlideIn">
       {/* Page Title */}
       <div className="text-center sm:text-left mb-10">
-        <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-teal-400 to-amber-400 bg-clip-text text-transparent flex items-center justify-center sm:justify-start gap-3">
-          <Compass className="h-9 w-9 text-teal-400 animate-pulse" />
-          Explore Districts
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-iron-black flex items-center justify-center sm:justify-start gap-3">
+          <Compass className="h-8 w-8 text-indigo-deep" />
+          Districts
         </h1>
-        <p className="text-slate-400 mt-2 text-lg max-w-2xl">
-          Discover the vibrant cultures, historical stepwells, natural sanctuaries, and localized delicacies across Gujarat.
+        <p className="text-iron-black/60 mt-2 text-base max-w-2xl">
+          Stepwells, temple towns, wildlife sanctuaries, and street food across Gujarat&apos;s districts.
         </p>
       </div>
 
       {/* Loading State */}
       {loading && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
-          <Loader2 className="h-12 w-12 text-teal-500 animate-spin mb-4" />
-          <p className="text-slate-400">Loading districts details...</p>
+          <div className="jali-divider-indigo w-24 animate-jaliResolve mb-4" />
+          <p className="text-iron-black/50">Loading districts...</p>
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="border border-red-950/50 bg-red-950/20 text-red-200 p-6 rounded-2xl max-w-lg mx-auto mt-10">
-          <h3 className="text-lg font-bold text-red-400">Loading Failed</h3>
-          <p className="text-slate-300 mt-1 text-sm">{error}</p>
+        <div className="border border-madder-red/30 bg-madder-red/5 text-madder-red p-6 rounded-lg max-w-lg mx-auto mt-10">
+          <h3 className="text-base font-bold">Couldn&apos;t load districts</h3>
+          <p className="text-iron-black/60 mt-1 text-sm">{error}</p>
         </div>
       )}
 
       {/* Districts Grid */}
       {!loading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {districts.map((district) => (
             <Link
               key={district._id}
               href={`/districts/${district._id}`}
-              className="group relative bg-slate-950/50 hover:bg-slate-950 border border-slate-800/80 hover:border-teal-500/50 rounded-2xl p-6 transition-all duration-350 shadow-xl overflow-hidden flex flex-col justify-between"
+              className="group border border-desert-dust hover:border-indigo-deep/40 rounded-lg p-5 transition-colors duration-150 bg-white flex flex-col justify-between"
             >
-              {/* Visual Glow on Hover */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-teal-500/10 to-amber-500/5 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-all duration-500" />
-              
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-900 text-teal-400 border border-slate-800">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-sm bg-dust-lighter text-iron-black/60 border border-desert-dust/60">
                     {district.region}
                   </span>
-                  <MapPin className="h-5 w-5 text-slate-600 group-hover:text-teal-400 transition-colors" />
+                  <MapPin className="h-4 w-4 text-desert-dust group-hover:text-indigo-deep transition-colors" />
                 </div>
-                
-                <h3 className="text-2xl font-bold text-slate-100 group-hover:text-teal-300 transition-colors mb-2">
+
+                <h3 className="text-xl font-bold text-iron-black group-hover:text-indigo-deep transition-colors mb-2" style={{ fontFamily: 'var(--font-display)' }}>
                   {district.name}
                 </h3>
 
-                <div className="flex items-center gap-2 text-slate-400 text-sm mt-4">
-                  <Calendar className="h-4 w-4 text-amber-500/70" />
-                  <span>Best time: <strong className="text-slate-200 font-medium">{district.bestSeason}</strong></span>
+                <div className="flex items-center gap-2 text-iron-black/50 text-sm mt-3">
+                  <Calendar className="h-3.5 w-3.5 text-indigo-deep/60" />
+                  <span>Best time: <strong className="text-iron-black/70 font-medium">{district.bestSeason}</strong></span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-xs font-semibold text-teal-400 group-hover:text-teal-300 transition-colors mt-6 pt-4 border-t border-slate-900">
-                <span>Explore District</span>
-                <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+              <div className="flex items-center gap-2 text-xs font-semibold text-indigo-deep group-hover:text-indigo-light transition-colors mt-5 pt-4 border-t border-desert-dust/40">
+                <span>View district</span>
+                <ArrowRight className="h-3.5 w-3.5 transform group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
           ))}

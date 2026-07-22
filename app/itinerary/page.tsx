@@ -5,14 +5,12 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { 
-  Sparkles, 
   Calendar, 
   MapPin, 
   Utensils, 
   Gem, 
   Loader2, 
   AlertCircle, 
-  Coins, 
   BookmarkCheck,
   ArrowRight
 } from 'lucide-react';
@@ -50,10 +48,22 @@ const INTERESTS_OPTIONS = [
   { id: 'wildlife', label: 'Wildlife & Safari' },
   { id: 'spiritual', label: 'Spiritual & Temples' },
   { id: 'adventure', label: 'Adventure & Trekking' },
-  { id: 'food', label: 'Food & Culinary Experiences' },
+  { id: 'food', label: 'Food & Culinary' },
   { id: 'architecture', label: 'Architecture & Stepwells' },
   { id: 'history', label: 'History & Gandhi Heritage' }
 ];
+
+function TypeIcon({ type }: { type: string }) {
+  if (type === 'food') return <Utensils className="h-4 w-4" />;
+  if (type === 'hidden_gem') return <Gem className="h-4 w-4" />;
+  return <MapPin className="h-4 w-4" />;
+}
+
+function typeBadgeColor(type: string): string {
+  if (type === 'food') return 'text-madder-red border-madder-red/20 bg-madder-red/5';
+  if (type === 'hidden_gem') return 'text-indigo-deep border-indigo-deep/20 bg-indigo-deep/5';
+  return 'text-indigo-deep border-indigo-deep/20 bg-indigo-deep/5';
+}
 
 export default function ItineraryPage() {
   const { data: session } = useSession();
@@ -115,7 +125,7 @@ export default function ItineraryPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate itinerary. Please try again.');
+        throw new Error(data.error || 'Couldn\'t generate itinerary — try again in a moment.');
       }
 
       setResult(data);
@@ -127,38 +137,35 @@ export default function ItineraryPage() {
   };
 
   return (
-    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-10 pb-20">
+    <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-10 pb-20 animate-fadeSlideIn">
       {/* Page Title */}
       <div className="text-center sm:text-left mb-10">
-        <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-teal-400 to-amber-400 bg-clip-text text-transparent">
-          AI Itinerary Generator
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-iron-black">
+          Trip Planner
         </h1>
-        <p className="text-slate-400 mt-2 text-lg max-w-2xl">
-          Design your perfect curated trip across Gujarat. Powered by verified local data and shaped by AI.
+        <p className="text-iron-black/60 mt-2 text-base max-w-2xl">
+          Set your destination, duration, budget, and interests. The itinerary is built from verified district data.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Planner Form - 5 Columns */}
-        <div className="lg:col-span-5 bg-slate-950/50 border border-slate-800/80 rounded-2xl p-6 sm:p-8 backdrop-blur-sm shadow-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-200">
-            <Calendar className="h-5 w-5 text-teal-400" /> Plan Your Trip
+        {/* Planner Form */}
+        <div className="lg:col-span-5 border border-desert-dust rounded-lg p-5 sm:p-6 bg-white">
+          <h2 className="text-lg font-bold mb-5 flex items-center gap-2 text-iron-black">
+            <Calendar className="h-5 w-5 text-indigo-deep" /> Plan your trip
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Destination Dropdown */}
             <div>
-              <label htmlFor="start-district-select" className="block text-sm font-semibold text-slate-300 mb-2">
-                Destination District
+              <label htmlFor="start-district-select" className="block text-sm font-semibold text-iron-black/70 mb-2">
+                Destination district
               </label>
               <select
                 id="start-district-select"
                 value={selectedDistrict}
                 onChange={(e) => setSelectedDistrict(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                className="w-full bg-white border border-desert-dust rounded-md px-4 py-2.5 text-iron-black focus:outline-none focus:border-indigo-deep transition-colors text-sm"
                 required
               >
                 {districts.map((d) => (
@@ -172,10 +179,10 @@ export default function ItineraryPage() {
             {/* Number of Days */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label htmlFor="days-input" className="text-sm font-semibold text-slate-300">
-                  Duration (Days)
+                <label htmlFor="days-input" className="text-sm font-semibold text-iron-black/70">
+                  Duration
                 </label>
-                <span className="text-sm font-bold text-teal-400">{days} Days</span>
+                <span className="text-sm font-bold text-indigo-deep font-data">{days} days</span>
               </div>
               <input
                 type="range"
@@ -184,21 +191,21 @@ export default function ItineraryPage() {
                 max="14"
                 value={days}
                 onChange={(e) => setDays(parseInt(e.target.value))}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-teal-500 focus:outline-none"
+                className="w-full h-2 bg-dust-lighter rounded-sm appearance-none cursor-pointer focus:outline-none"
               />
-              <div className="flex justify-between text-xs text-slate-500 mt-1">
-                <span>1 Day</span>
-                <span>14 Days</span>
+              <div className="flex justify-between text-xs text-iron-black/40 mt-1 font-data">
+                <span>1</span>
+                <span>14</span>
               </div>
             </div>
 
             {/* Budget Slider */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label htmlFor="budget-input" className="text-sm font-semibold text-slate-300">
-                  Budget Limit (INR)
+                <label htmlFor="budget-input" className="text-sm font-semibold text-iron-black/70">
+                  Budget limit (INR)
                 </label>
-                <span className="text-sm font-bold text-amber-400">₹{budget.toLocaleString('en-IN')}</span>
+                <span className="text-sm font-bold text-indigo-deep font-data">₹{budget.toLocaleString('en-IN')}</span>
               </div>
               <input
                 type="range"
@@ -208,18 +215,18 @@ export default function ItineraryPage() {
                 step="1000"
                 value={budget}
                 onChange={(e) => setBudget(parseInt(e.target.value))}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500 focus:outline-none"
+                className="w-full h-2 bg-dust-lighter rounded-sm appearance-none cursor-pointer focus:outline-none"
               />
-              <div className="flex justify-between text-xs text-slate-500 mt-1">
+              <div className="flex justify-between text-xs text-iron-black/40 mt-1 font-data">
                 <span>₹2,000</span>
                 <span>₹1,00,000</span>
               </div>
             </div>
 
-            {/* Interests Multi-Select Checkboxes */}
+            {/* Interests */}
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-3">
-                Interests (Select all that apply)
+              <label className="block text-sm font-semibold text-iron-black/70 mb-3">
+                Interests
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {INTERESTS_OPTIONS.map((interest) => {
@@ -230,14 +237,14 @@ export default function ItineraryPage() {
                       type="button"
                       id={`interest-${interest.id}`}
                       onClick={() => handleInterestToggle(interest.id)}
-                      className={`flex items-center text-left px-3.5 py-2.5 rounded-xl border text-sm transition-all select-none ${
+                      className={`flex items-center text-left px-3 py-2 rounded-md border text-sm transition-colors select-none cursor-pointer ${
                         isChecked
-                          ? 'bg-teal-500/10 border-teal-500 text-teal-400 shadow-md shadow-teal-500/5'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-300'
+                          ? 'bg-indigo-deep/10 border-indigo-deep text-indigo-deep'
+                          : 'bg-white border-desert-dust text-iron-black/60 hover:border-desert-dust hover:text-iron-black/70'
                       }`}
                     >
-                      <span className="flex-1 font-medium">{interest.label}</span>
-                      {isChecked && <div className="h-1.5 w-1.5 rounded-full bg-teal-400 ml-2" />}
+                      <span className="flex-1 font-medium text-xs">{interest.label}</span>
+                      {isChecked && <div className="h-1.5 w-1.5 rounded-full bg-indigo-deep ml-2" />}
                     </button>
                   );
                 })}
@@ -249,180 +256,168 @@ export default function ItineraryPage() {
               id="submit-btn"
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-slate-950 font-bold hover:from-teal-400 hover:to-emerald-400 py-6 rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-teal-500/10 transition-all border-none"
+              className="w-full bg-indigo-deep text-resist-white font-bold hover:bg-indigo-hover py-5 rounded-md flex items-center justify-center gap-2 cursor-pointer transition-colors border-none"
             >
               {loading ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Weaving Itinerary...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Generating itinerary...
                 </>
               ) : (
                 <>
-                  <Sparkles className="h-5 w-5" />
-                  Generate AI Itinerary
+                  <Calendar className="h-4 w-4" />
+                  Generate Itinerary
                 </>
               )}
             </Button>
           </form>
         </div>
 
-        {/* Results Panel - 7 Columns */}
-        <div className="lg:col-span-7 space-y-6">
+        {/* Results Panel */}
+        <div className="lg:col-span-7 space-y-5">
           {/* Initial State */}
           {!loading && !error && !result && (
-            <div className="border border-dashed border-slate-800 rounded-2xl py-24 px-6 text-center bg-slate-950/20">
-              <div className="mx-auto h-12 w-12 rounded-full bg-slate-800/80 flex items-center justify-center mb-4">
-                <Sparkles className="h-6 w-6 text-slate-600" />
+            <div className="border border-dashed border-desert-dust rounded-lg py-20 px-6 text-center bg-white">
+              <div className="mx-auto h-10 w-10 rounded-md bg-dust-lighter flex items-center justify-center mb-4">
+                <Calendar className="h-5 w-5 text-iron-black/30" />
               </div>
-              <h3 className="text-lg font-bold text-slate-300">No Itinerary Generated Yet</h3>
-              <p className="text-slate-500 max-w-sm mx-auto mt-2 text-sm">
-                Configure your preferences and click the generate button to create a tailored travel plan.
+              <h3 className="text-base font-bold text-iron-black/70">Your itinerary will appear here</h3>
+              <p className="text-iron-black/40 max-w-sm mx-auto mt-2 text-sm">
+                Set your destination, dates, and interests, then generate.
               </p>
             </div>
           )}
 
           {/* Loading State */}
           {loading && (
-            <div className="border border-slate-800/80 rounded-2xl p-8 bg-slate-950/30 backdrop-blur-sm flex flex-col items-center justify-center py-28 text-center">
-              <Loader2 className="h-12 w-12 text-teal-500 animate-spin mb-6" />
-              <h3 className="text-xl font-bold text-slate-200">Generating Your Gujarat Experience</h3>
-              <p className="text-slate-400 text-sm max-w-xs mt-2 animate-pulse">
-                Analyzing local attractions, secret spots, and popular foods to fit your budget...
+            <div className="border border-desert-dust rounded-lg p-8 bg-white flex flex-col items-center justify-center py-24 text-center">
+              <div className="jali-divider-indigo w-32 animate-jaliResolve mb-6" />
+              <h3 className="text-lg font-bold text-iron-black">Building your itinerary</h3>
+              <p className="text-iron-black/50 text-sm max-w-xs mt-2">
+                This takes a few seconds.
               </p>
             </div>
           )}
 
           {/* Error State */}
           {error && (
-            <div className="border border-red-950/50 bg-red-950/20 text-red-200 p-6 rounded-2xl flex items-start gap-4">
-              <AlertCircle className="h-6 w-6 text-red-500 shrink-0 mt-0.5" />
+            <div className="border border-madder-red/30 bg-madder-red/5 text-madder-red p-5 rounded-lg flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-lg font-bold text-red-400">Generation Failed</h3>
-                <p className="text-slate-300 mt-1 text-sm">{error}</p>
+                <h3 className="text-base font-bold">Couldn&apos;t generate itinerary</h3>
+                <p className="text-iron-black/60 mt-1 text-sm">{error}</p>
               </div>
             </div>
           )}
 
-          {/* Success Results Display */}
+          {/* Results */}
           {result && (
-            <div className="space-y-8 animate-fadeIn">
-              {/* Saved Notification Banner if persisted */}
+            <div className="space-y-5">
+              {/* Saved Banner */}
               {result._id && (
-                <div className="bg-teal-950/40 border border-teal-500/40 rounded-2xl p-4 flex items-center justify-between gap-4 text-teal-200">
+                <div className="bg-indigo-deep/5 border border-indigo-deep/20 rounded-lg p-4 flex items-center justify-between gap-4 text-indigo-deep">
                   <div className="flex items-center gap-3">
-                    <BookmarkCheck className="h-6 w-6 text-teal-400 shrink-0" />
+                    <BookmarkCheck className="h-5 w-5 shrink-0" />
                     <div>
-                      <h4 className="font-bold text-sm text-teal-300">Itinerary Saved to Your Profile!</h4>
-                      <p className="text-xs text-slate-300">You can view, rename, and manage this trip anytime in your account.</p>
+                      <h4 className="font-bold text-sm">Itinerary saved</h4>
+                      <p className="text-xs text-iron-black/50">You can view and rename this trip anytime.</p>
                     </div>
                   </div>
                   <Link href={`/trips/${result._id}`}>
-                    <Button size="sm" className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1 shrink-0">
-                      View in My Trips <ArrowRight className="h-3.5 w-3.5" />
+                    <Button size="sm" className="bg-indigo-deep hover:bg-indigo-hover text-resist-white font-bold rounded-md text-xs flex items-center gap-1 shrink-0">
+                      View in My Trips <ArrowRight className="h-3 w-3" />
                     </Button>
                   </Link>
                 </div>
               )}
 
               {!session?.user && (
-                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex items-center justify-between gap-4 text-slate-300 text-xs">
-                  <span>Want to save this itinerary to your profile?</span>
+                <div className="bg-dust-lighter border border-desert-dust rounded-lg p-4 flex items-center justify-between gap-4 text-iron-black/60 text-xs">
+                  <span>Sign in to save this itinerary.</span>
                   <Link href="/login?callbackUrl=/itinerary">
-                    <Button size="sm" variant="outline" className="border-slate-700 bg-slate-800 text-teal-400 hover:bg-slate-700 rounded-xl text-xs">
-                      Sign In to Save
+                    <Button size="sm" variant="outline" className="rounded-md text-xs">
+                      Sign In
                     </Button>
                   </Link>
                 </div>
               )}
 
-              {/* Cost Summary Banner */}
-              <div className="bg-gradient-to-r from-teal-950/40 via-slate-950/80 to-amber-950/20 border border-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              {/* Cost Summary */}
+              <div className="border border-desert-dust rounded-lg p-5 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 text-amber-400">
-                    <Coins className="h-5 w-5" />
+                  <div className="h-10 w-10 rounded-md bg-indigo-deep/10 flex items-center justify-center border border-indigo-deep/15 text-indigo-deep">
+                    <MapPin className="h-5 w-5" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-400">Estimated Total Cost</h4>
-                    <p className="text-2xl font-extrabold text-amber-400">
+                    <h4 className="text-xs font-medium text-iron-black/50">Estimated total cost</h4>
+                    <p className="text-2xl font-extrabold text-indigo-deep font-data">
                       ₹{result.totalEstimatedCost.toLocaleString('en-IN')}
                     </p>
                   </div>
                 </div>
-                <div className="text-right sm:text-right text-xs text-slate-400 border-t sm:border-t-0 sm:border-l border-slate-800 pt-3 sm:pt-0 sm:pl-6 w-full sm:w-auto">
-                  <div>Selected District: <strong className="text-slate-200">{selectedDistrict}</strong></div>
-                  <div>Target Budget: <strong className="text-slate-200">₹{budget.toLocaleString('en-IN')}</strong></div>
+                <div className="text-right text-xs text-iron-black/50 border-t sm:border-t-0 sm:border-l border-desert-dust pt-3 sm:pt-0 sm:pl-5 w-full sm:w-auto font-data">
+                  <div>District: <strong className="text-iron-black/70">{selectedDistrict}</strong></div>
+                  <div>Budget: <strong className="text-iron-black/70">₹{budget.toLocaleString('en-IN')}</strong></div>
                 </div>
               </div>
 
-              {/* Day by Day Cards */}
-              <div className="space-y-6">
+              {/* Day Cards */}
+              <div className="space-y-5">
                 {result.itinerary.map((dayPlan) => (
-                  <div key={dayPlan.day} className="bg-slate-950/40 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+                  <div key={dayPlan.day} className="border border-desert-dust rounded-lg overflow-hidden bg-white">
                     {/* Day Header */}
-                    <div className="bg-slate-950/80 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                    <div className="bg-dust-lighter px-5 py-3 border-b border-desert-dust/60 flex justify-between items-center">
                       <div className="flex items-center gap-3">
-                        <span className="h-7 w-7 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center text-sm font-bold border border-teal-500/20">
+                        <span className="h-6 w-6 rounded-sm bg-indigo-deep text-resist-white flex items-center justify-center text-xs font-bold">
                           {dayPlan.day}
                         </span>
-                        <h3 className="text-lg font-bold text-slate-100">
+                        <h3 className="text-sm font-bold text-iron-black">
                           Day {dayPlan.day} — {dayPlan.district}
                         </h3>
                       </div>
-                      <span className="text-sm font-semibold text-slate-400">
-                        Day Cost: <strong className="text-amber-400">₹{dayPlan.dailyEstimatedCost}</strong>
+                      <span className="text-xs font-medium text-iron-black/50 font-data">
+                        ₹{dayPlan.dailyEstimatedCost}
                       </span>
                     </div>
 
-                    {/* Items List */}
-                    <div className="p-6 space-y-6">
-                      {dayPlan.items.map((item, idx) => {
-                        let Icon = MapPin;
-                        let typeBadgeColor = 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-                        if (item.type === 'food') {
-                          Icon = Utensils;
-                          typeBadgeColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-                        } else if (item.type === 'hidden_gem') {
-                          Icon = Gem;
-                          typeBadgeColor = 'bg-purple-500/10 text-purple-400 border-purple-500/20';
-                        }
+                    {/* Items */}
+                    <div className="p-5 space-y-4">
+                      {dayPlan.items.map((item, idx) => (
+                        <div 
+                          key={idx} 
+                          className="relative flex gap-3 pb-4 last:pb-0 last:border-none border-b border-desert-dust/30"
+                        >
+                          {idx < dayPlan.items.length - 1 && (
+                            <div className="absolute top-7 left-3.5 bottom-0 w-px bg-desert-dust/40 -translate-x-1/2" />
+                          )}
 
-                        return (
-                          <div 
-                            key={idx} 
-                            className="relative flex gap-4 pb-6 last:pb-0 last:border-none border-b border-slate-800/50"
-                          >
-                            {idx < dayPlan.items.length - 1 && (
-                              <div className="absolute top-8 left-4 bottom-0 w-0.5 bg-slate-800/80 -translate-x-1/2" />
-                            )}
+                          <div className={`h-7 w-7 rounded-sm flex items-center justify-center shrink-0 mt-0.5 ${typeBadgeColor(item.type)}`}>
+                            <TypeIcon type={item.type} />
+                          </div>
 
-                            <div className="h-8 w-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 text-slate-400 mt-0.5">
-                              <Icon className="h-4 w-4" />
-                            </div>
-
-                            <div className="flex-1 space-y-1.5">
-                              <div className="flex flex-wrap items-center justify-between gap-2">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded border border-slate-800/80">
-                                    {item.time}
-                                  </span>
-                                  <h4 className="font-bold text-slate-200 text-base">
-                                    {item.name}
-                                  </h4>
-                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider ${typeBadgeColor}`}>
-                                    {item.type.replace('_', ' ')}
-                                  </span>
-                                </div>
-                                <span className="text-sm font-semibold text-amber-500 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
-                                  ₹{item.estimatedCost}
+                          <div className="flex-1 space-y-1">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-bold text-iron-black/40 font-data">
+                                  {item.time}
+                                </span>
+                                <h4 className="font-bold text-iron-black text-sm">
+                                  {item.name}
+                                </h4>
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-sm border uppercase tracking-wider ${typeBadgeColor(item.type)}`}>
+                                  {item.type.replace('_', ' ')}
                                 </span>
                               </div>
-                              <p className="text-sm text-slate-400 leading-relaxed">
-                                {item.notes}
-                              </p>
+                              <span className="text-xs font-medium text-indigo-deep font-data">
+                                ₹{item.estimatedCost}
+                              </span>
                             </div>
+                            <p className="text-sm text-iron-black/60 leading-relaxed">
+                              {item.notes}
+                            </p>
                           </div>
-                        );
-                      })}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
