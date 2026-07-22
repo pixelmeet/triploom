@@ -6,6 +6,8 @@ export interface IDistrict extends Document {
   bestSeason: string;
   overviewCached: string;
   lastGeneratedAt: Date | null;
+  weatherAdviceCached?: string;
+  weatherAdviceGeneratedAt?: Date | null;
 }
 
 const DistrictSchema: Schema = new Schema({
@@ -14,6 +16,8 @@ const DistrictSchema: Schema = new Schema({
   bestSeason: { type: String, required: true },
   overviewCached: { type: String, default: '' },
   lastGeneratedAt: { type: Date, default: null },
+  weatherAdviceCached: { type: String, default: '' },
+  weatherAdviceGeneratedAt: { type: Date, default: null },
 });
 
 export default mongoose.models.District || mongoose.model<IDistrict>('District', DistrictSchema);

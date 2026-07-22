@@ -16,6 +16,10 @@ import {
   RotateCcw,
   AlertCircle,
   CheckCircle2,
+  CloudSun,
+  Thermometer,
+  Droplets,
+  Wind,
 } from 'lucide-react';
 
 interface District {
@@ -50,6 +54,13 @@ interface HiddenGem {
   reason?: string;
 }
 
+interface WeatherData {
+  tempC: number;
+  condition: string;
+  humidity: number;
+  windSpeedKmh: number;
+}
+
 const INTERESTS_OPTIONS = [
   { id: 'heritage', label: 'Heritage & Palaces' },
   { id: 'nature', label: 'Nature & Scenic Views' },
@@ -72,6 +83,8 @@ export default function DistrictDetailPage() {
   const [foods, setFoods] = useState<FoodItem[]>([]);
   const [hiddenGems, setHiddenGems] = useState<HiddenGem[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [weatherAdvice, setWeatherAdvice] = useState<string | null>(null);
 
   // Loaders
   const [loadingDistrict, setLoadingDistrict] = useState(true);
@@ -79,6 +92,8 @@ export default function DistrictDetailPage() {
   const [loadingAttractions, setLoadingAttractions] = useState(true);
   const [loadingFood, setLoadingFood] = useState(true);
   const [loadingGems, setLoadingGems] = useState(true);
+  const [loadingWeather, setLoadingWeather] = useState(true);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
 
   // Actions
   const [regenerating, setRegenerating] = useState(false);
@@ -186,6 +201,30 @@ export default function DistrictDetailPage() {
     }
     loadGems();
   }, [id, selectedInterests]);
+
+  // Fetch Weather & AI Advice
+  useEffect(() => {
+    if (!id) return;
+    async function loadWeather() {
+      try {
+        setLoadingWeather(true);
+        setWeatherError(null);
+        const res = await fetch(`/api/districts/${id}/weather`);
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Weather info unavailable right now');
+        }
+        setWeatherData(data.weather);
+        setWeatherAdvice(data.advice);
+      } catch (err: any) {
+        console.error('Weather load error:', err);
+        setWeatherError('Weather info unavailable right now');
+      } finally {
+        setLoadingWeather(false);
+      }
+    }
+    loadWeather();
+  }, [id]);
 
   const handleInterestToggle = (interestId: string) => {
     setSelectedInterests((prev) =>
@@ -330,8 +369,93 @@ export default function DistrictDetailPage() {
 
         {/* Main Grid Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* LEFT COLUMN: Overview & Foods (7 columns) */}
+          {/* LEFT COLUMN: Weather, Overview & Foods (7 columns) */}
           <div className="lg:col-span-7 space-y-8">
+            {/* Live Weather & AI Advice Section */}
+            <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+              
+              <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
+                <h2 className="text-xl font-bold flex items-center gap-2 text-slate-100">
+                  <CloudSun className="h-5 w-5 text-sky-400" /> Current Weather & Advice
+                </h2>
+                {!loadingWeather && !weatherError && (
+                  <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-sky-950/60 text-sky-400 border border-sky-800/60">
+                    Live Data
+                  </span>
+                )}
+              </div>
+
+              {loadingWeather ? (
+                <div className="space-y-4 py-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-16 bg-slate-900/60 border border-slate-800/60 rounded-2xl animate-pulse" />
+                    ))}
+                  </div>
+                  <div className="h-16 bg-slate-900/60 border border-slate-800/60 rounded-2xl animate-pulse" />
+                </div>
+              ) : weatherError ? (
+                <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 text-slate-400 text-sm flex items-center gap-3">
+                  <AlertCircle className="h-5 w-5 text-slate-500 shrink-0" />
+                  <span>Weather info unavailable right now</span>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  {/* Weather Metrics */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-3.5 flex flex-col justify-between">
+                      <div className="flex items-center gap-1.5 text-slate-400 text-xs font-medium">
+                        <Thermometer className="h-3.5 w-3.5 text-amber-400" /> Temp
+                      </div>
+                      <div className="text-xl font-extrabold text-white mt-1">
+                        {weatherData?.tempC}°C
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-3.5 flex flex-col justify-between">
+                      <div className="flex items-center gap-1.5 text-slate-400 text-xs font-medium">
+                        <CloudSun className="h-3.5 w-3.5 text-sky-400" /> Condition
+                      </div>
+                      <div className="text-sm font-bold text-slate-200 mt-1 capitalize truncate">
+                        {weatherData?.condition}
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-3.5 flex flex-col justify-between">
+                      <div className="flex items-center gap-1.5 text-slate-400 text-xs font-medium">
+                        <Droplets className="h-3.5 w-3.5 text-blue-400" /> Humidity
+                      </div>
+                      <div className="text-xl font-extrabold text-white mt-1">
+                        {weatherData?.humidity}%
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-3.5 flex flex-col justify-between">
+                      <div className="flex items-center gap-1.5 text-slate-400 text-xs font-medium">
+                        <Wind className="h-3.5 w-3.5 text-teal-400" /> Wind
+                      </div>
+                      <div className="text-xl font-extrabold text-white mt-1">
+                        {weatherData?.windSpeedKmh} <span className="text-xs font-normal text-slate-400">km/h</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* AI Weather Advice Narrative */}
+                  {weatherAdvice && (
+                    <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 relative">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-sky-400 uppercase tracking-wider mb-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-sky-400" /> Smart Travel Advice
+                      </div>
+                      <p className="text-slate-300 text-sm leading-relaxed font-light">
+                        {weatherAdvice}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* AI Overview Section */}
             <div className="bg-slate-950/50 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/5 rounded-full blur-2xl pointer-events-none" />
